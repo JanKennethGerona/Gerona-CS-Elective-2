@@ -98,26 +98,44 @@ class FruitDetailPage extends StatelessWidget {
 
   const FruitDetailPage({super.key, required this.fruitName});
 
-  Map<String, String> _getFruitData(String name) {
+  String _getImageAsset(String name) {
     switch (name.toLowerCase()) {
       case 'apple':
-        return {'title': 'Apple', 'icon': '🍎'};
+        return 'pics/images (00).webp';
       case 'banana':
-        return {'title': 'Banana', 'icon': '🍌'};
-      case 'orange':
-        return {'title': 'Orange', 'icon': '🍊'};
+        return 'pics/images (0).jpg';
+      case 'pineapple':
+        return 'pics/images (1).jpg';
       case 'strawberry':
-        return {'title': 'Strawberry', 'icon': '🍓'};
+        return 'pics/images (2).jpg';
       case 'watermelon':
-        return {'title': 'Watermelon', 'icon': '🍉'};
+        return 'pics/images (3).jpg';
       default:
-        return {'title': name, 'icon': '🍇'};
+        return 'pics/images (0).jpg';
+    }
+  }
+
+  String _getFruitTitle(String name) {
+    switch (name.toLowerCase()) {
+      case 'apple':
+        return 'Apple';
+      case 'banana':
+        return 'Banana';
+      case 'pineapple':
+        return 'Pineapple';
+      case 'strawberry':
+        return 'Strawberry';
+      case 'watermelon':
+        return 'Watermelon';
+      default:
+        return name;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final fruitData = _getFruitData(fruitName);
+    final imageAsset = _getImageAsset(fruitName);
+    final title = _getFruitTitle(fruitName);
 
     return Scaffold(
       appBar: AppBar(
@@ -130,10 +148,15 @@ class FruitDetailPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(fruitData['icon']!, style: const TextStyle(fontSize: 120)),
+            Image.asset(
+              imageAsset,
+              width: 220,
+              height: 220,
+              fit: BoxFit.contain,
+            ),
             const SizedBox(height: 20),
             Text(
-              fruitData['title']!,
+              title,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
