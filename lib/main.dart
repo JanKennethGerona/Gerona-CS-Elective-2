@@ -1,238 +1,173 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+// Router configuration demonstrating nested routing
+final GoRouter _router = GoRouter(
+  initialLocation: '/',
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const FruitListPage();
+      },
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'fruit/:name',
+          builder: (BuildContext context, GoRouterState state) {
+            final String fruitName = state.pathParameters['name'] ?? 'unknown';
+            return FruitDetailPage(fruitName: fruitName);
+          },
+        ),
+      ],
+    ),
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Instagram UI',
+    return MaterialApp.router(
+      routerConfig: _router,
+      title: 'Fruit Router App',
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: const InstagramFeedScreen(),
     );
   }
 }
 
-class InstagramFeedScreen extends StatelessWidget {
-  const InstagramFeedScreen({super.key});
+class FruitListPage extends StatelessWidget {
+  const FruitListPage({super.key});
+
+  final List<Map<String, String>> fruits = const [
+    {'name': 'apple', 'display': 'Apple', 'icon': '🍎'},
+    {'name': 'banana', 'display': 'Banana', 'icon': '🍌'},
+    {'name': 'pineapple', 'display': 'Pineapple', 'icon': '🍍'},
+    {'name': 'strawberry', 'display': 'Strawberry', 'icon': '🍓'},
+    {'name': 'watermelon', 'display': 'Watermelon', 'icon': '🍉'},
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Instagram',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-          ),
+      body: Center(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (final fruit in fruits)
+                          ListTile(
+                            leading: Text(
+                              fruit['icon']!,
+                              style: const TextStyle(fontSize: 32),
+                            ),
+                            title: Text(fruit['display']!),
+                            onTap: () {
+                              context.go('/fruit/${fruit['name']}');
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border, color: Colors.black, size: 28),
-            onPressed: () {},
-          ),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.chat_bubble_outline, color: Colors.black, size: 26),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Text(
-                    '2',
-                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
-      body: SingleChildScrollView(
+    );
+  }
+}
+
+class FruitDetailPage extends StatelessWidget {
+  final String fruitName;
+
+  const FruitDetailPage({super.key, required this.fruitName});
+
+  String _getImageAsset(String name) {
+    switch (name.toLowerCase()) {
+      case 'apple':
+        return 'pics/images (00).webp';
+      case 'banana':
+        return 'pics/images (0).jpg';
+      case 'pineapple':
+        return 'pics/images (1).jpg';
+      case 'strawberry':
+        return 'pics/images (2).jpg';
+      case 'watermelon':
+        return 'pics/images (3).jpg';
+      default:
+        return 'pics/images (0).jpg';
+    }
+  }
+
+  String _getFruitTitle(String name) {
+    switch (name.toLowerCase()) {
+      case 'apple':
+        return 'Apple';
+      case 'banana':
+        return 'Banana';
+      case 'pineapple':
+        return 'Pineapple';
+      case 'strawberry':
+        return 'Strawberry';
+      case 'watermelon':
+        return 'Watermelon';
+      default:
+        return name;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final imageAsset = _getImageAsset(fruitName);
+    final title = _getFruitTitle(fruitName);
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // User Header Row
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      // Story Circle Border
-                      Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(
-                            colors: [Colors.amber, Colors.pink, Colors.purple],
-                          ),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const CircleAvatar(
-                            radius: 16,
-                            backgroundColor: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'username',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Icon(Icons.more_vert),
-                ],
-              ),
+            Image.asset(
+              imageAsset,
+              width: 220,
+              height: 220,
+              fit: BoxFit.contain,
             ),
-
-            // Post Content (Gradient area from sample screenshot)
-            Container(
-              height: 400,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                    Color(0xFFFFB74D), // Yellow/Orange
-                    Color(0xFFE91E63), // Pink
-                    Color(0xFF5E35B1), // Purple
-                  ],
-                ),
-              ),
+            const SizedBox(height: 20),
+            Text(
+              title,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-
-            // Post Action Buttons (matches screenshot)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.favorite, color: Colors.red, size: 28),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(width: 18),
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.chat_bubble_outline, size: 26),
-                        onPressed: () {},
-                      ),
-                      const SizedBox(width: 18),
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(Icons.send_outlined, size: 26),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    icon: const Icon(Icons.bookmark_border, size: 28),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ),
-
-            // Likes Counter
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text(
-                '10547 Likes',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            // Caption Text
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: RichText(
-                text: const TextSpan(
-                  style: TextStyle(color: Colors.black, fontSize: 13),
-                  children: [
-                    TextSpan(
-                      text: '@username ',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(
-                      text: 'Lorem ipsum dolor sit amet, consectetur',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 4),
-
-            // Hashtags
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text(
-                '#lorem  #ipsum  #dolor  #sit  #amet  #concestetur',
-                style: TextStyle(color: Colors.blue, fontSize: 12),
-              ),
+            const SizedBox(height: 8),
+            Text(
+              'Route: /fruit/$fruitName',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
             ),
           ],
         ),
-      ),
-
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.black,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled, size: 28), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.search, size: 28), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.add_box_outlined, size: 28), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.video_collection_outlined, size: 28), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline, size: 28), label: ''),
-        ],
       ),
     );
   }
