@@ -70,7 +70,7 @@ void main() {
         ),
       );
 
-      expect(find.text('#7'), findsOneWidget);
+      expect(find.text('#007'), findsOneWidget);
       expect(find.text('Squirtle'), findsOneWidget);
       expect(find.byType(Image), findsOneWidget);
     });

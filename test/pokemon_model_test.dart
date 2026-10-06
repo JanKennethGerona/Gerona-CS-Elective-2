@@ -15,7 +15,7 @@ void main() {
       expect(pokemon.name, 'pikachu');
       expect(
         pokemon.imageUrl,
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
       );
       expect(pokemon.formattedName, 'Pikachu');
       expect(pokemon.formattedId, '#025');

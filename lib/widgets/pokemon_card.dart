@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../models/pokemon.dart';
+import '../providers/pokemon_provider.dart';
+import '../screens/pokemon_detail_screen.dart';
 
 Color getPokemonCardColor(int id) {
   switch (id) {
@@ -96,7 +99,16 @@ class PokemonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       clipBehavior: Clip.antiAlias,
-      child: Padding(
+      child: InkWell(
+        onTap: () {
+          context.read<PokemonProvider>().selectPokemon(pokemon);
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const PokemonDetailScreen(),
+            ),
+          );
+        },
+        child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -104,7 +116,7 @@ class PokemonCard extends StatelessWidget {
             Align(
               alignment: Alignment.topRight,
               child: Text(
-                '#${pokemon.id}',
+                pokemon.formattedId,
                 style: GoogleFonts.pixelifySans(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -157,6 +169,7 @@ class PokemonCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
           ],
+        ),
         ),
       ),
     );
