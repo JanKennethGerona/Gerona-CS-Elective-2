@@ -19,6 +19,23 @@ void main() {
       );
       expect(pokemon.formattedName, 'Pikachu');
       expect(pokemon.formattedId, '#025');
+      expect(pokemon.types, isEmpty);
+      expect(pokemon.primaryType, 'normal');
+    });
+
+    test('supports copyWithTypes and primaryType', () {
+      final json = {
+        'name': 'bulbasaur',
+        'url': 'https://pokeapi.co/api/v2/pokemon/1/',
+      };
+
+      final pokemon = Pokemon.fromListJson(json);
+      final enriched = pokemon.copyWithTypes(['grass', 'poison']);
+
+      expect(enriched.id, 1);
+      expect(enriched.name, 'bulbasaur');
+      expect(enriched.types, ['grass', 'poison']);
+      expect(enriched.primaryType, 'grass');
     });
 
     test('formats id with 3 padded digits', () {

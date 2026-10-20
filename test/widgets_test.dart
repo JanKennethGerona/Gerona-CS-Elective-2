@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_first_flutter_ui/models/pokemon.dart';
 import 'package:my_first_flutter_ui/widgets/empty_view.dart';
@@ -8,7 +9,8 @@ import 'package:my_first_flutter_ui/widgets/pokemon_card.dart';
 
 void main() {
   group('Widget Tests', () {
-    testWidgets('LoadingView displays CircularProgressIndicator', (tester) async {
+    testWidgets('LoadingView displays CircularProgressIndicator',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(body: LoadingView()),
@@ -17,7 +19,8 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('ErrorView displays message and triggers onRetry', (tester) async {
+    testWidgets('ErrorView displays message and triggers onRetry',
+        (tester) async {
       var retryClicked = false;
       await tester.pumpWidget(
         MaterialApp(
@@ -39,7 +42,8 @@ void main() {
       expect(retryClicked, isTrue);
     });
 
-    testWidgets('EmptyView displays custom and default messages', (tester) async {
+    testWidgets('EmptyView displays custom and default messages',
+        (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(body: EmptyView()),
@@ -55,23 +59,30 @@ void main() {
       expect(find.text('Custom empty text'), findsOneWidget);
     });
 
-    testWidgets('PokemonCard renders formatted name and ID', (tester) async {
+    testWidgets('PokemonCard renders formatted name, ID, and favorite heart',
+        (tester) async {
       const pokemon = Pokemon(
         id: 7,
         name: 'squirtle',
-        imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
+        imageUrl:
+            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
+        types: ['water'],
       );
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: PokemonCard(pokemon: pokemon),
+        const ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: PokemonCard(pokemon: pokemon),
+            ),
           ),
         ),
       );
 
       expect(find.text('#007'), findsOneWidget);
       expect(find.text('Squirtle'), findsOneWidget);
+      expect(find.text('WATER'), findsOneWidget);
+      expect(find.byIcon(Icons.favorite_border), findsOneWidget);
       expect(find.byType(Image), findsOneWidget);
     });
   });

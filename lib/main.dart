@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'providers/pokemon_provider.dart';
-import 'screens/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'screens/pokedex_screen.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => PokemonProvider()..fetchPokemon(),
-      child: const PokedexApp(),
+    const ProviderScope(
+      child: PokedexApp(),
     ),
   );
 }
@@ -29,7 +27,7 @@ class PokedexApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home: const PokedexScreen(),
     );
   }
 }
