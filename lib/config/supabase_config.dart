@@ -15,3 +15,4 @@ class SupabaseConfig {
         supabaseUrl.startsWith('https://');
   }
 }
+

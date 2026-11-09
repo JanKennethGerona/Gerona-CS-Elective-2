@@ -92,7 +92,7 @@ class _ShopScreenState extends State<ShopScreen> {
           children: [
             Text(
               'Supabase Shop',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
             ),
             Text(
               'Price Filtering & Pagination',
@@ -108,7 +108,7 @@ class _ShopScreenState extends State<ShopScreen> {
               onTap: _showConfigDialog,
               borderRadius: BorderRadius.circular(16),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: provider.isConnectedToSupabase
                       ? Colors.green.shade100
@@ -127,14 +127,14 @@ class _ShopScreenState extends State<ShopScreen> {
                       provider.isConnectedToSupabase
                           ? Icons.cloud_done
                           : Icons.cloud_off,
-                      size: 14,
+                      size: 13,
                       color: provider.isConnectedToSupabase
                           ? Colors.green.shade800
                           : Colors.amber.shade900,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      provider.isConnectedToSupabase ? 'Supabase' : 'Demo Mode',
+                      provider.isConnectedToSupabase ? 'Live DB' : 'Demo Mode',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
@@ -153,7 +153,7 @@ class _ShopScreenState extends State<ShopScreen> {
               _showFilter ? Icons.filter_alt : Icons.filter_alt_outlined,
               color: _showFilter ? theme.colorScheme.primary : null,
             ),
-            tooltip: 'Toggle Filter Slider',
+            tooltip: 'Toggle Price Filter',
             onPressed: () {
               setState(() {
                 _showFilter = !_showFilter;
@@ -161,9 +161,9 @@ class _ShopScreenState extends State<ShopScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: () => provider.fetchProducts(),
+            icon: const Icon(Icons.add_circle_outline),
+            tooltip: 'Add Product',
+            onPressed: _showAddDialog,
           ),
         ],
       ),
@@ -171,12 +171,12 @@ class _ShopScreenState extends State<ShopScreen> {
         children: [
           // Search Bar
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search products by name...',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search, size: 20),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear, size: 18),
@@ -188,7 +188,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     : null,
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: Colors.grey.shade300),
@@ -211,7 +211,7 @@ class _ShopScreenState extends State<ShopScreen> {
             crossFadeState: _showFilter
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 200),
           ),
 
           // Main Product Area
@@ -225,13 +225,13 @@ class _ShopScreenState extends State<ShopScreen> {
                       : Stack(
                           children: [
                             GridView.builder(
-                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                              padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
-                                childAspectRatio: 0.72,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
+                                childAspectRatio: 0.70,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
                               ),
                               itemCount: provider.products.length,
                               itemBuilder: (context, index) {
@@ -266,15 +266,13 @@ class _ShopScreenState extends State<ShopScreen> {
                         ),
             ),
           ),
-
-          // Pagination Controls (showing 6-8 max items per page)
-          const PaginationControls(),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      bottomNavigationBar: const PaginationControls(),
+      floatingActionButton: FloatingActionButton.small(
         onPressed: _showAddDialog,
-        icon: const Icon(Icons.add),
-        label: const Text('Add Product'),
+        tooltip: 'Add Product',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -289,34 +287,34 @@ class _ShopScreenState extends State<ShopScreen> {
           children: [
             Icon(
               Icons.search_off_rounded,
-              size: 64,
+              size: 56,
               color: Colors.grey.shade400,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             const Text(
               'No Products Found',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               'No products match your current price filter or search query.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 color: Colors.grey.shade600,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             FilledButton.tonalIcon(
               onPressed: () {
                 _searchController.clear();
                 provider.resetFilters();
               },
-              icon: const Icon(Icons.filter_alt_off),
-              label: const Text('Reset Price Filter & Search'),
+              icon: const Icon(Icons.filter_alt_off, size: 18),
+              label: const Text('Reset Filter & Search'),
             ),
           ],
         ),

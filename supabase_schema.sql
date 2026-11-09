@@ -50,3 +50,4 @@ INSERT INTO public.products (name, description, price, stock, image_url) VALUES
 ('3-in-1 Fast Wireless Charging Station', 'Simultaneous Qi charger for phone, watch, and wireless earbuds.', 39.99, 28, 'https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=500'),
 ('Dimmable LED Desk Lamp', 'Touch-control architect lamp with 5 color modes and USB port.', 32.00, 24, 'https://images.unsplash.com/photo-1534073828943-f801091bb18c?w=500')
 ON CONFLICT (id) DO NOTHING;
+

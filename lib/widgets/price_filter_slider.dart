@@ -44,46 +44,45 @@ class _PriceFilterSliderState extends State<PriceFilterSlider> {
         side: BorderSide(color: Colors.grey.shade200),
       ),
       color: Colors.grey.shade50,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.tune, size: 20, color: theme.colorScheme.primary),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Price Range Filter',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
+                Icon(Icons.tune, size: 18, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'Price Filter',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
-                  ],
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     '\$${_currentValues.start.toStringAsFixed(0)} - \$${_currentValues.end.toStringAsFixed(0)}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.primary,
-                      fontSize: 13,
+                      fontSize: 12,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
             // The Price Range Slider
             RangeSlider(
@@ -156,7 +155,7 @@ class _PriceFilterSliderState extends State<PriceFilterSlider> {
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         visualDensity: VisualDensity.compact,
                       ),
-                      icon: const Icon(Icons.clear, size: 16),
+                      icon: const Icon(Icons.clear, size: 14),
                       label: const Text('Reset', style: TextStyle(fontSize: 12)),
                       onPressed: () {
                         provider.resetFilters();
@@ -203,7 +202,7 @@ class _PresetChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             color: isSelected ? Colors.white : Colors.black87,
           ),

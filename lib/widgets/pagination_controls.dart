@@ -20,14 +20,14 @@ class PaginationControls extends StatelessWidget {
         : (provider.currentPage * provider.pageSize);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, -2),
-            blurRadius: 8,
+            blurRadius: 6,
           ),
         ],
       ),
@@ -38,14 +38,17 @@ class PaginationControls extends StatelessWidget {
           children: [
             // Top Row: Showing items info & Page Size Switcher (6 or 8)
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Showing $startItem–$endItem of ${provider.totalCount} products',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    '$startItem–$endItem of ${provider.totalCount} products',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 // Page Size Switcher (Show 6 or 8 products per page)
@@ -55,7 +58,7 @@ class PaginationControls extends StatelessWidget {
                     Text(
                       'Per page: ',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: Colors.grey.shade600,
                       ),
                     ),
@@ -75,19 +78,24 @@ class PaginationControls extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
 
             // Bottom Row: Navigation buttons (Prev, Page 1..N, Next)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Previous button
-                IconButton.filledTonal(
-                  icon: const Icon(Icons.chevron_left, size: 20),
-                  tooltip: 'Previous Page',
-                  onPressed: provider.hasPrevPage && !provider.isLoading
-                      ? () => provider.previousPage()
-                      : null,
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: IconButton.filledTonal(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.chevron_left, size: 18),
+                    tooltip: 'Previous Page',
+                    onPressed: provider.hasPrevPage && !provider.isLoading
+                        ? () => provider.previousPage()
+                        : null,
+                  ),
                 ),
                 const SizedBox(width: 8),
 
@@ -102,21 +110,21 @@ class PaginationControls extends StatelessWidget {
                         final isCurrent = page == provider.currentPage;
 
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
                           child: InkWell(
                             onTap: provider.isLoading || isCurrent
                                 ? null
                                 : () => provider.goToPage(page),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(6),
                             child: Container(
-                              width: 32,
-                              height: 32,
+                              width: 28,
+                              height: 28,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: isCurrent
                                     ? theme.colorScheme.primary
                                     : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(6),
                                 border: Border.all(
                                   color: isCurrent
                                       ? theme.colorScheme.primary
@@ -126,7 +134,7 @@ class PaginationControls extends StatelessWidget {
                               child: Text(
                                 '$page',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   fontWeight: isCurrent
                                       ? FontWeight.bold
                                       : FontWeight.normal,
@@ -145,12 +153,17 @@ class PaginationControls extends StatelessWidget {
 
                 const SizedBox(width: 8),
                 // Next button
-                IconButton.filledTonal(
-                  icon: const Icon(Icons.chevron_right, size: 20),
-                  tooltip: 'Next Page',
-                  onPressed: provider.hasNextPage && !provider.isLoading
-                      ? () => provider.nextPage()
-                      : null,
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: IconButton.filledTonal(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.chevron_right, size: 18),
+                    tooltip: 'Next Page',
+                    onPressed: provider.hasNextPage && !provider.isLoading
+                        ? () => provider.nextPage()
+                        : null,
+                  ),
                 ),
               ],
             ),
@@ -177,19 +190,19 @@ class _PageSizeChoice extends StatelessWidget {
     final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: BorderRadius.circular(4),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
           color: isSelected
               ? theme.colorScheme.primary
               : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(4),
         ),
         child: Text(
           '$size',
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: FontWeight.bold,
             color: isSelected ? Colors.white : Colors.grey.shade700,
           ),

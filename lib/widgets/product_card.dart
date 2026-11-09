@@ -66,61 +66,64 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product Image Banner
-          Stack(
-            children: [
-              Container(
-                height: 120,
-                width: double.infinity,
-                color: Colors.grey.shade100,
-                child: product.imageUrl != null && product.imageUrl!.isNotEmpty
-                    ? Image.network(
-                        product.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Center(
+          // Product Image Banner (Expanded to fill available height dynamically without overflow)
+          Expanded(
+            flex: 5,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  color: Colors.grey.shade100,
+                  child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                      ? Image.network(
+                          product.imageUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Center(
+                            child: Icon(
+                              Icons.shopping_bag_outlined,
+                              size: 36,
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                        )
+                      : Center(
                           child: Icon(
                             Icons.shopping_bag_outlined,
-                            size: 40,
+                            size: 36,
                             color: Colors.grey.shade400,
                           ),
                         ),
-                      )
-                    : Center(
-                        child: Icon(
-                          Icons.shopping_bag_outlined,
-                          size: 40,
-                          color: Colors.grey.shade400,
-                        ),
+                ),
+                // Price Tag Chip
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.75),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '\$${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
                       ),
-              ),
-              // Price Tag Chip
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          // Content info
+          // Content info (compact and non-overflowing)
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Product Name
                 Text(
@@ -129,42 +132,36 @@ class ProductCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 13,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
 
                 // Description
                 Text(
                   product.description.isEmpty
                       ? 'No description available'
                       : product.description,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     color: Colors.grey.shade600,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
 
-                // Stock and Action Buttons
+                // Stock & Actions Row
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Stock badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: product.stock > 0
-                            ? Colors.green.shade50
-                            : Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
+                    Expanded(
                       child: Text(
                         product.stock > 0
                             ? '${product.stock} in stock'
                             : 'Out of stock',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -174,27 +171,33 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(width: 4),
 
                     // Actions menu (Edit, Delete)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.edit_outlined, size: 18, color: theme.colorScheme.primary),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          tooltip: 'Edit Product',
-                          onPressed: () => _showEditDialog(context),
+                    InkWell(
+                      onTap: () => _showEditDialog(context),
+                      borderRadius: BorderRadius.circular(6),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Icon(
+                          Icons.edit_outlined,
+                          size: 16,
+                          color: theme.colorScheme.primary,
                         ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          tooltip: 'Delete Product',
-                          onPressed: () => _confirmDelete(context),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    InkWell(
+                      onTap: () => _confirmDelete(context),
+                      borderRadius: BorderRadius.circular(6),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: const Icon(
+                          Icons.delete_outline,
+                          size: 16,
+                          color: Colors.redAccent,
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
