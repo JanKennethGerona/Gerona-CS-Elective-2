@@ -56,7 +56,9 @@ class AuthService {
     if (isConnected && _client != null) {
       return await _client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb ? null : 'io.supabase.flutter://login-callback/',
+        redirectTo: kIsWeb
+            ? Uri.base.origin // Automatically uses the exact current localhost:PORT in Flutter Web
+            : 'io.supabase.flutter://login-callback/',
       );
     }
     return false;
