@@ -168,70 +168,60 @@ class _ShopScreenState extends State<ShopScreen> {
           ),
           Consumer<AuthProvider>(
             builder: (context, auth, _) {
-              if (auth.isAuthenticated) {
-                final userEmail = auth.currentUser?.email ?? 'User';
-                return PopupMenuButton<String>(
-                  icon: CircleAvatar(
-                    radius: 13,
-                    backgroundColor: theme.colorScheme.primary,
-                    child: Text(
-                      userEmail.isNotEmpty ? userEmail[0].toUpperCase() : 'U',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+              final userEmail = auth.currentUser?.email ?? 'User';
+              return PopupMenuButton<String>(
+                icon: CircleAvatar(
+                  radius: 13,
+                  backgroundColor: theme.colorScheme.primary,
+                  child: Text(
+                    userEmail.isNotEmpty ? userEmail[0].toUpperCase() : 'U',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  tooltip: 'Account',
-                  onSelected: (val) {
-                    if (val == 'logout') {
-                      auth.signOut();
-                    }
-                  },
-                  itemBuilder: (ctx) => [
-                    PopupMenuItem(
-                      enabled: false,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Signed in as',
-                            style: TextStyle(fontSize: 11, color: Colors.grey),
-                          ),
-                          Text(
-                            userEmail,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuDivider(),
-                    const PopupMenuItem(
-                      value: 'logout',
-                      child: Row(
-                        children: [
-                          Icon(Icons.logout, size: 18, color: Colors.red),
-                          SizedBox(width: 8),
-                          Text('Sign Out', style: TextStyle(color: Colors.red)),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                return IconButton(
-                  icon: const Icon(Icons.account_circle_outlined),
-                  tooltip: 'Sign In',
-                  onPressed: () {
+                ),
+                tooltip: 'Account',
+                onSelected: (val) {
+                  if (val == 'logout') {
                     auth.signOut();
-                  },
-                );
-              }
+                  }
+                },
+                itemBuilder: (ctx) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Signed in as',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                        Text(
+                          userEmail,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout, size: 18, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Sign Out', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              );
             },
           ),
           const SizedBox(width: 4),

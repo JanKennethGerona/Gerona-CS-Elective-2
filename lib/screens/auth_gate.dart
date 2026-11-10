@@ -11,7 +11,8 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
-    if (authProvider.isAuthenticated || authProvider.isGuestMode) {
+    // Access strictly restricted to authenticated users only
+    if (authProvider.isAuthenticated) {
       return const ShopScreen();
     }
 

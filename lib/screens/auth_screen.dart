@@ -399,20 +399,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 16),
-
-                                    // Continue as Guest Option
-                                    TextButton(
-                                      onPressed: () => authProvider.continueAsGuest(),
-                                      child: Text(
-                                        'Skip for now (Continue as Guest)',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey.shade700,
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),

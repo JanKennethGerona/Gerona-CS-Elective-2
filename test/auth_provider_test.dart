@@ -11,23 +11,12 @@ void main() {
 
     test('Initial state is not authenticated', () {
       expect(authProvider.isAuthenticated, isFalse);
-      expect(authProvider.isGuestMode, isFalse);
       expect(authProvider.isLoading, isFalse);
       expect(authProvider.errorMessage, isNull);
     });
 
-    test('continueAsGuest sets guestMode to true', () {
-      authProvider.continueAsGuest();
-      expect(authProvider.isGuestMode, isTrue);
-      expect(authProvider.isAuthenticated, isFalse);
-    });
-
-    test('signOut resets guestMode and user', () async {
-      authProvider.continueAsGuest();
-      expect(authProvider.isGuestMode, isTrue);
-
+    test('signOut clears user session', () async {
       await authProvider.signOut();
-      expect(authProvider.isGuestMode, isFalse);
       expect(authProvider.isAuthenticated, isFalse);
     });
   });
