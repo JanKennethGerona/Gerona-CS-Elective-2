@@ -16,10 +16,16 @@ class ProductService {
   final SupabaseClient? _client;
 
   ProductService({SupabaseClient? client})
-      : _client = client ??
-            (SupabaseConfig.isConfigured
-                ? Supabase.instance.client
-                : null);
+      : _client = client ?? _getSupabaseClient();
+
+  static SupabaseClient? _getSupabaseClient() {
+    if (!SupabaseConfig.isConfigured) return null;
+    try {
+      return Supabase.instance.client;
+    } catch (_) {
+      return null;
+    }
+  }
 
   bool get isConnectedToSupabase =>
       _client != null && SupabaseConfig.isConfigured;

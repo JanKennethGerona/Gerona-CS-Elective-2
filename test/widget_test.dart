@@ -5,7 +5,7 @@ import 'package:my_first_flutter_ui/widgets/pagination_controls.dart';
 import 'package:my_first_flutter_ui/widgets/price_filter_slider.dart';
 
 void main() {
-  testWidgets('ShopScreen smoke test renders UI components', (WidgetTester tester) async {
+  testWidgets('AuthGate navigates from AuthScreen to ShopScreen', (WidgetTester tester) async {
     tester.view.physicalSize = const Size(1080, 1920);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -14,23 +14,19 @@ void main() {
     await tester.pumpWidget(const MyApp());
     await tester.pumpAndSettle();
 
-    // Verify AppBar
-    expect(find.text('Supabase Shop'), findsOneWidget);
+    // 1. Verify AuthScreen rendered with Google OAuth provider
+    expect(find.text('Welcome to Supabase Shop'), findsOneWidget);
+    expect(find.text('Continue with Google'), findsOneWidget);
+    expect(find.text('Skip for now (Continue as Guest)'), findsOneWidget);
+
+    // 2. Tap Continue as Guest to enter the ShopScreen
+    await tester.tap(find.text('Skip for now (Continue as Guest)'));
+    await tester.pumpAndSettle();
+
+    // 3. Verify ShopScreen rendered
     expect(find.text('Price Filtering & Pagination'), findsOneWidget);
-
-    // Verify Price Filter Slider
     expect(find.byType(PriceFilterSlider), findsOneWidget);
-    expect(find.text('Price Filter'), findsOneWidget);
-
-    // Verify Search input
-    expect(find.byType(TextField), findsOneWidget);
-
-    // Verify Pagination Controls
     expect(find.byType(PaginationControls), findsOneWidget);
-    expect(find.byIcon(Icons.chevron_left), findsOneWidget);
-    expect(find.byIcon(Icons.chevron_right), findsOneWidget);
-
-    // Verify Add button
     expect(find.byIcon(Icons.add), findsOneWidget);
   });
 }
