@@ -15,8 +15,8 @@ void main() {
     await tester.pumpAndSettle();
 
     // 1. Verify LEGO-themed AuthScreen rendered
-    expect(find.text('LEGO'), findsOneWidget);
-    expect(find.text('BRICK SHOP AUTH'), findsOneWidget);
+    expect(find.text('BRICKED'), findsOneWidget);
+    expect(find.text('Build Your Imagination, Brick by Brick.'), findsOneWidget);
     expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Skip for now (Continue as Guest)'), findsOneWidget);
 

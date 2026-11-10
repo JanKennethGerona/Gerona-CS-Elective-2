@@ -155,9 +155,9 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                               child: Column(
                                 children: [
-                                  // LEGO Style Badge Logo
+                                  // BRICKED Style Badge Logo
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                                     decoration: BoxDecoration(
                                       color: legoRed,
                                       border: Border.all(color: legoYellow, width: 3),
@@ -170,12 +170,12 @@ class _AuthScreenState extends State<AuthScreen> {
                                       ],
                                     ),
                                     child: const Text(
-                                      'LEGO',
+                                      'BRICKED',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900,
                                         fontSize: 26,
-                                        letterSpacing: -1.0,
+                                        letterSpacing: -0.5,
                                         fontFamily: 'sans-serif',
                                         shadows: [
                                           Shadow(
@@ -192,14 +192,18 @@ class _AuthScreenState extends State<AuthScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
-                                  const Text(
-                                    'BRICK SHOP AUTH',
-                                    style: TextStyle(
-                                      color: legoYellow,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 12,
-                                      letterSpacing: 2,
+                                  const SizedBox(height: 8),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                    child: Text(
+                                      'Build Your Imagination, Brick by Brick.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: legoYellow,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 12,
+                                        letterSpacing: 0.3,
+                                      ),
                                     ),
                                   ),
                                 ],
