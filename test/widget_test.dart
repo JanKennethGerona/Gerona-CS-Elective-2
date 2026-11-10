@@ -14,8 +14,9 @@ void main() {
     await tester.pumpWidget(const MyApp());
     await tester.pumpAndSettle();
 
-    // 1. Verify AuthScreen rendered with Google OAuth provider
-    expect(find.text('Welcome to Supabase Shop'), findsOneWidget);
+    // 1. Verify LEGO-themed AuthScreen rendered
+    expect(find.text('LEGO'), findsOneWidget);
+    expect(find.text('BRICK SHOP AUTH'), findsOneWidget);
     expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Skip for now (Continue as Guest)'), findsOneWidget);
 
