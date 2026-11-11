@@ -30,159 +30,138 @@ class ProductService {
   bool get isConnectedToSupabase =>
       _client != null && SupabaseConfig.isConfigured;
 
-  // In-memory demo products for fallback / initial showcase before DB config
+  // Authentic LEGO Sets & Bricks fallback / demo data
   final List<Product> _mockProducts = [
     const Product(
       id: 1,
-      name: 'Wireless Noise-Canceling Headphones',
-      description: 'Premium over-ear headphones with 30-hour battery life.',
-      price: 120.00,
-      stock: 15,
-      imageUrl:
-          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
+      name: 'LEGO Star Wars Millennium Falcon',
+      description: '7,541 pieces. Features quad laser cannons, landing legs, and lowering ramp.',
+      price: 849.99,
+      stock: 5,
+      imageUrl: 'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=600',
     ),
     const Product(
       id: 2,
-      name: 'Mechanical Gaming Keyboard',
-      description: 'RGB backlit mechanical keyboard with tactile blue switches.',
-      price: 85.00,
-      stock: 20,
-      imageUrl:
-          'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500',
+      name: 'LEGO Icons Bonsai Tree',
+      description: '878 pieces. Interchangeable green leaves and vibrant pink cherry blossom blooms.',
+      price: 49.99,
+      stock: 28,
+      imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600',
     ),
     const Product(
       id: 3,
-      name: 'Ergonomic Optical Gaming Mouse',
-      description: '16,000 DPI adjustable optical gaming mouse with programmable keys.',
-      price: 45.00,
-      stock: 32,
-      imageUrl:
-          'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500',
+      name: 'LEGO Technic Porsche 911 GT3 RS',
+      description: '2,704 pieces. Authentic orange bodywork, red suspension springs, and working gearbox.',
+      price: 299.99,
+      stock: 8,
+      imageUrl: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=600',
     ),
     const Product(
       id: 4,
-      name: 'UltraWide Curved Monitor 34"',
-      description: 'Immersive 144Hz WQHD curved gaming and productivity display.',
-      price: 349.99,
-      stock: 8,
-      imageUrl:
-          'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500',
+      name: 'LEGO NASA Apollo Saturn V',
+      description: '1,969 pieces. Meter-high rocket model with 3 removable stages and lunar lander.',
+      price: 119.99,
+      stock: 14,
+      imageUrl: 'https://images.unsplash.com/photo-1611604548018-d56bbd85d681?w=600',
     ),
     const Product(
       id: 5,
-      name: 'USB-C Dual 4K Docking Station',
-      description: '11-in-1 multi-port docking station with 100W Power Delivery.',
-      price: 64.99,
-      stock: 25,
-      imageUrl:
-          'https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=500',
+      name: 'LEGO Creator Medieval Castle',
+      description: '1,426 pieces. 3-in-1 set builds a Castle, Tower with catapult, or Medieval market.',
+      price: 99.99,
+      stock: 20,
+      imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600',
     ),
     const Product(
       id: 6,
-      name: 'Fitness Smartwatch Tracker',
-      description: 'AMOLED display smartwatch with heart rate and SpO2 tracking.',
-      price: 95.00,
-      stock: 18,
-      imageUrl:
-          'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
+      name: 'LEGO Ideas Fender Stratocaster',
+      description: '1,074 pieces. Build your own 1970s Stratocaster guitar with 65 Princeton Reverb amp.',
+      price: 119.00,
+      stock: 15,
+      imageUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600',
     ),
     const Product(
       id: 7,
-      name: 'Waterproof Bluetooth Speaker',
-      description: 'Rugged 360-degree portable speaker with deep bass and IPX7 rating.',
-      price: 55.00,
-      stock: 22,
-      imageUrl:
-          'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500',
+      name: 'LEGO Classic Creative Brick Box',
+      description: '790 pieces in 33 different colors, including windows, doors, and wheels.',
+      price: 59.99,
+      stock: 35,
+      imageUrl: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600',
     ),
     const Product(
       id: 8,
-      name: 'Ergonomic Mesh Office Chair',
-      description: 'High-back desk chair with breathable mesh and lumbar support.',
-      price: 189.00,
-      stock: 10,
-      imageUrl:
-          'https://images.unsplash.com/photo-1580481077195-c228c3b74b35?w=500',
+      name: 'LEGO Harry Potter Hogwarts Castle',
+      description: '6,020 pieces. Detailed microscale model featuring towers, turrets, and classrooms.',
+      price: 469.99,
+      stock: 6,
+      imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600',
     ),
     const Product(
       id: 9,
-      name: '4K Ultra HD Streaming Webcam',
-      description: 'Auto-focus webcam with dual noise-canceling microphones.',
-      price: 74.50,
-      stock: 14,
-      imageUrl:
-          'https://images.unsplash.com/photo-1587826080692-f439cd0b70da?w=500',
+      name: 'LEGO Speed Champions Ferrari F40',
+      description: '318 pieces. Iconic supercar model with interchangeable rims and driver minifigure.',
+      price: 26.99,
+      stock: 45,
+      imageUrl: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600',
     ),
     const Product(
       id: 10,
-      name: 'Extended Leather Desk Pad',
-      description: 'Waterproof PU leather large mousepad and blotter for desks.',
-      price: 24.99,
-      stock: 50,
-      imageUrl:
-          'https://images.unsplash.com/photo-1616440347437-b1c73416efc2?w=500',
+      name: 'LEGO City Space Research Shuttle',
+      description: '273 pieces. Research shuttle with opening cockpit, 2 cargo doors, and rover.',
+      price: 39.99,
+      stock: 30,
+      imageUrl: 'https://images.unsplash.com/photo-1517976487507-59a5e11d3839?w=600',
     ),
     const Product(
       id: 11,
-      name: 'Adjustable Aluminum Phone Stand',
-      description: 'Multi-angle foldable cradle compatible with smartphones and tablets.',
-      price: 18.00,
-      stock: 40,
-      imageUrl:
-          'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=500',
+      name: 'LEGO Botanical Wildflower Bouquet',
+      description: '939 pieces. 16 individual stems crafted from plant-based plastic elements.',
+      price: 59.99,
+      stock: 22,
+      imageUrl: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600',
     ),
     const Product(
       id: 12,
-      name: 'Portable High-Speed SSD 1TB',
-      description: 'Ultra-fast NVMe solid state drive with up to 1050MB/s speeds.',
-      price: 109.99,
-      stock: 12,
-      imageUrl:
-          'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=500',
+      name: 'LEGO Architecture London Skyline',
+      description: '468 pieces. Features National Gallery, Nelson Column, London Eye, and Big Ben.',
+      price: 39.99,
+      stock: 25,
+      imageUrl: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600',
     ),
     const Product(
       id: 13,
-      name: 'Studio Condenser USB Microphone',
-      description: 'Cardioid studio mic with zero-latency headphone monitoring.',
-      price: 89.00,
-      stock: 16,
-      imageUrl:
-          'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500',
+      name: 'LEGO Marvel Infinity Gauntlet',
+      description: '590 pieces. Golden gauntlet with vibrant Infinity Stones and sturdy display stand.',
+      price: 79.99,
+      stock: 18,
+      imageUrl: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600',
     ),
     const Product(
       id: 14,
-      name: 'Shockproof Laptop Sleeve 15.6"',
-      description: 'Water-resistant protective notebook case with accessory pocket.',
-      price: 28.50,
-      stock: 35,
-      imageUrl:
-          'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500',
+      name: 'LEGO Minifigures Mystery Pack',
+      description: '1 mystery collectible minifigure with accessories and collector leaflet.',
+      price: 4.99,
+      stock: 120,
+      imageUrl: 'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=600',
     ),
     const Product(
       id: 15,
-      name: '3-in-1 Fast Wireless Charging Station',
-      description: 'Simultaneous Qi charger for phone, watch, and wireless earbuds.',
-      price: 39.99,
-      stock: 28,
-      imageUrl:
-          'https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=500',
+      name: 'LEGO Super Mario Starter Course',
+      description: '231 pieces. Interactive Mario figure with LCD screens and speaker.',
+      price: 59.99,
+      stock: 20,
+      imageUrl: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600',
     ),
     const Product(
       id: 16,
-      name: 'Dimmable LED Desk Lamp',
-      description: 'Touch-control architect lamp with 5 color modes and USB port.',
-      price: 32.00,
+      name: 'LEGO Disney Cinderella Carriage',
+      description: '237 pieces. Gold and white horse-drawn carriage with Cinderella minifigure.',
+      price: 39.99,
       stock: 24,
-      imageUrl:
-          'https://images.unsplash.com/photo-1534073828943-f801091bb18c?w=500',
+      imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600',
     ),
   ];
 
-  /// Fetch products with price range filtering and pagination using Supabase queries.
-  /// Matches lecture slides:
-  /// - Filtering: gte('price', minPrice).lte('price', maxPrice).ilike(...)
-  /// - Ordering: order('price', ascending: true)
-  /// - Pagination: range(from, to)
   Future<ProductsResult> fetchProducts({
     double? minPrice,
     double? maxPrice,
@@ -226,7 +205,6 @@ class ProductService {
 
         return ProductsResult(products: products, totalCount: totalCount);
       } catch (e) {
-        // If Supabase table isn't ready or network issue, fallback to mock data
         return _fetchFromMock(
           minPrice: minPrice,
           maxPrice: maxPrice,
@@ -246,8 +224,6 @@ class ProductService {
     );
   }
 
-  /// Insert product matching slide 41:
-  /// await supabase.from('products').insert(...)
   Future<Product> addProduct(Product product) async {
     if (isConnectedToSupabase && _client != null) {
       final response = await _client
@@ -264,8 +240,6 @@ class ProductService {
     }
   }
 
-  /// Update product matching slide 43:
-  /// await supabase.from('products').update(...).eq('id', product.id).select().single()
   Future<Product> updateProduct(Product product) async {
     if (isConnectedToSupabase && _client != null) {
       final response = await _client
@@ -284,8 +258,6 @@ class ProductService {
     }
   }
 
-  /// Delete product matching slide 43:
-  /// await supabase.from('products').delete().eq('id', id).select()
   Future<void> deleteProduct(dynamic id) async {
     if (isConnectedToSupabase && _client != null) {
       await _client.from('products').delete().eq('id', id).select();

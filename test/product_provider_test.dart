@@ -79,14 +79,14 @@ void main() {
     test('Search filter filters by product name', () async {
       await provider.fetchProducts();
 
-      provider.setSearchQuery('Keyboard');
+      provider.setSearchQuery('Castle');
       await Future<void>.delayed(Duration.zero);
 
       expect(provider.products.isNotEmpty, isTrue);
       for (final product in provider.products) {
         expect(
-          product.name.toLowerCase().contains('keyboard') ||
-              product.description.toLowerCase().contains('keyboard'),
+          product.name.toLowerCase().contains('castle') ||
+              product.description.toLowerCase().contains('castle'),
           isTrue,
         );
       }

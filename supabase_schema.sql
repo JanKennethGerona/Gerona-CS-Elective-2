@@ -1,6 +1,6 @@
 -- ==============================================================================
--- Supabase Schema & Sample Data for Products Table
--- CS Elective 2 | Mobile App Development - Supabase Activity
+-- Supabase Schema & LEGO Seed Data for Products Table
+-- CS Elective 2 | Mobile App Development - BRICKED Shop
 -- ==============================================================================
 
 -- 1. Create the products table
@@ -14,40 +14,43 @@ CREATE TABLE IF NOT EXISTS public.products (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::TEXT, NOW()) NOT NULL
 );
 
--- 2. Enable Row Level Security (RLS) as covered in Lecture Feature 04
+-- 2. Enable Row Level Security (RLS)
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
 -- 3. Create RLS policies for CRUD operations (Read, Insert, Update, Delete)
-CREATE POLICY "Allow public select" ON public.products
-  FOR SELECT USING (true);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public select' AND tablename = 'products') THEN
+    CREATE POLICY "Allow public select" ON public.products FOR SELECT USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public insert' AND tablename = 'products') THEN
+    CREATE POLICY "Allow public insert" ON public.products FOR INSERT WITH CHECK (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public update' AND tablename = 'products') THEN
+    CREATE POLICY "Allow public update" ON public.products FOR UPDATE USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public delete' AND tablename = 'products') THEN
+    CREATE POLICY "Allow public delete" ON public.products FOR DELETE USING (true);
+  END IF;
+END $$;
 
-CREATE POLICY "Allow public insert" ON public.products
-  FOR INSERT WITH CHECK (true);
+-- 4. Clear old electronics and insert authentic LEGO Sets & Bricks
+DELETE FROM public.products;
 
-CREATE POLICY "Allow public update" ON public.products
-  FOR UPDATE USING (true);
-
-CREATE POLICY "Allow public delete" ON public.products
-  FOR DELETE USING (true);
-
--- 4. Seed initial products for Price Filtering & Pagination testing
--- (Provides 16 varied items with prices from $18 to $350)
-INSERT INTO public.products (name, description, price, stock, image_url) VALUES
-('Wireless Noise-Canceling Headphones', 'Premium over-ear headphones with 30-hour battery life.', 120.00, 15, 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500'),
-('Mechanical Gaming Keyboard', 'RGB backlit mechanical keyboard with tactile blue switches.', 85.00, 20, 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500'),
-('Ergonomic Optical Gaming Mouse', '16,000 DPI adjustable optical gaming mouse with programmable keys.', 45.00, 32, 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=500'),
-('UltraWide Curved Monitor 34"', 'Immersive 144Hz WQHD curved gaming and productivity display.', 349.99, 8, 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500'),
-('USB-C Dual 4K Docking Station', '11-in-1 multi-port docking station with 100W Power Delivery.', 64.99, 25, 'https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=500'),
-('Fitness Smartwatch Tracker', 'AMOLED display smartwatch with heart rate and SpO2 tracking.', 95.00, 18, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500'),
-('Waterproof Bluetooth Speaker', 'Rugged 360-degree portable speaker with deep bass and IPX7 rating.', 55.00, 22, 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500'),
-('Ergonomic Mesh Office Chair', 'High-back desk chair with breathable mesh and lumbar support.', 189.00, 10, 'https://images.unsplash.com/photo-1580481077195-c228c3b74b35?w=500'),
-('4K Ultra HD Streaming Webcam', 'Auto-focus webcam with dual noise-canceling microphones.', 74.50, 14, 'https://images.unsplash.com/photo-1587826080692-f439cd0b70da?w=500'),
-('Extended Leather Desk Pad', 'Waterproof PU leather large mousepad and blotter for desks.', 24.99, 50, 'https://images.unsplash.com/photo-1616440347437-b1c73416efc2?w=500'),
-('Adjustable Aluminum Phone Stand', 'Multi-angle foldable cradle compatible with smartphones and tablets.', 18.00, 40, 'https://images.unsplash.com/photo-1586105251261-72a756497a11?w=500'),
-('Portable High-Speed SSD 1TB', 'Ultra-fast NVMe solid state drive with up to 1050MB/s speeds.', 109.99, 12, 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=500'),
-('Studio Condenser USB Microphone', 'Cardioid studio mic with zero-latency headphone monitoring.', 89.00, 16, 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500'),
-('Shockproof Laptop Sleeve 15.6"', 'Water-resistant protective notebook case with accessory pocket.', 28.50, 35, 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500'),
-('3-in-1 Fast Wireless Charging Station', 'Simultaneous Qi charger for phone, watch, and wireless earbuds.', 39.99, 28, 'https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=500'),
-('Dimmable LED Desk Lamp', 'Touch-control architect lamp with 5 color modes and USB port.', 32.00, 24, 'https://images.unsplash.com/photo-1534073828943-f801091bb18c?w=500')
-ON CONFLICT (id) DO NOTHING;
-
+INSERT INTO public.products (id, name, description, price, stock, image_url) VALUES
+(1, 'LEGO Star Wars Millennium Falcon', '7,541 pieces. Features upper and lower quad laser cannons, landing legs, and lowering boarding ramp.', 849.99, 5, 'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=600'),
+(2, 'LEGO Icons Bonsai Tree', '878 pieces. Interchangeable green leaves and vibrant pink cherry blossom blooms.', 49.99, 28, 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600'),
+(3, 'LEGO Technic Porsche 911 GT3 RS', '2,704 pieces. Authentic orange bodywork, red suspension springs, and working gearbox.', 299.99, 8, 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=600'),
+(4, 'LEGO NASA Apollo Saturn V', '1,969 pieces. Authentic meter-high rocket with 3 removable stages and lunar lander.', 119.99, 14, 'https://images.unsplash.com/photo-1611604548018-d56bbd85d681?w=600'),
+(5, 'LEGO Creator Medieval Castle', '1,426 pieces. 3-in-1 set builds a Castle, Tower with catapult, or Medieval marketplace.', 99.99, 20, 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600'),
+(6, 'LEGO Ideas Fender Stratocaster', '1,074 pieces. Build your own 1970s Stratocaster guitar with 65 Princeton Reverb amp.', 119.00, 15, 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600'),
+(7, 'LEGO Classic Large Creative Brick Box', '790 pieces in 33 different colors, including windows, doors, and tires.', 59.99, 35, 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600'),
+(8, 'LEGO Harry Potter Hogwarts Castle', '6,020 pieces. Microscale model featuring towers, turrets, chambers, and classrooms.', 469.99, 6, 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600'),
+(9, 'LEGO Speed Champions Ferrari F40', '318 pieces. Iconic supercar model with interchangeable rims and driver minifigure.', 26.99, 45, 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600'),
+(10, 'LEGO City Space Mars Research Shuttle', '273 pieces. Research shuttle with opening cockpit, 2 cargo doors, and rover.', 39.99, 30, 'https://images.unsplash.com/photo-1517976487507-59a5e11d3839?w=600'),
+(11, 'LEGO Botanical Wildflower Bouquet', '939 pieces. 16 individual stems crafted from plant-based plastic elements.', 59.99, 22, 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600'),
+(12, 'LEGO Architecture London Skyline', '468 pieces. Features National Gallery, Nelson Column, London Eye, and Big Ben.', 39.99, 25, 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600'),
+(13, 'LEGO Marvel Infinity Gauntlet', '590 pieces. Golden gauntlet with vibrant Infinity Stones and sturdy display stand.', 79.99, 18, 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600'),
+(14, 'LEGO Minifigures Series Mystery Pack', '1 mystery collectible minifigure with accessories and collector leaflet.', 4.99, 120, 'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=600'),
+(15, 'LEGO Super Mario Starter Course', '231 pieces. Interactive Mario figure with LCD screens and speaker.', 59.99, 20, 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600'),
+(16, 'LEGO Disney Cinderella Royal Carriage', '237 pieces. Gold and white horse-drawn carriage with Cinderella minifigure.', 39.99, 24, 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600');
