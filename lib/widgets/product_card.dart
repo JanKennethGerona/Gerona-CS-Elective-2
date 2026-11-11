@@ -100,24 +100,61 @@ class ProductCard extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 Container(
-                  color: const Color(0xFFF6F4EE),
+                  color: Colors.white,
                   child: product.imageUrl != null && product.imageUrl!.isNotEmpty
                       ? Image.network(
                           product.imageUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Center(
-                            child: Icon(
-                              Icons.widgets_outlined,
-                              size: 38,
-                              color: Color(0xFFC7C2B6),
+                          fit: BoxFit.contain,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: LegoTheme.red,
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: const Color(0xFFF6F4EE),
+                            child: const Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.extension_rounded,
+                                    size: 32,
+                                    color: LegoTheme.red,
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'LEGO',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 10,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         )
-                      : const Center(
-                          child: Icon(
-                            Icons.widgets_outlined,
-                            size: 38,
-                            color: Color(0xFFC7C2B6),
+                      : Container(
+                          color: const Color(0xFFF6F4EE),
+                          child: const Center(
+                            child: Icon(
+                              Icons.extension_rounded,
+                              size: 36,
+                              color: LegoTheme.red,
+                            ),
                           ),
                         ),
                 ),

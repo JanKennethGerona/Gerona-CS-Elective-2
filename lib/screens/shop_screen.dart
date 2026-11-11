@@ -96,10 +96,11 @@ class _ShopScreenState extends State<ShopScreen> {
         backgroundColor: LegoTheme.red,
         elevation: 3,
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             // BRICKED Badge Logo in AppBar
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
               decoration: BoxDecoration(
                 color: LegoTheme.red,
                 border: Border.all(color: LegoTheme.yellow, width: 2),
@@ -116,23 +117,13 @@ class _ShopScreenState extends State<ShopScreen> {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
-                  fontSize: 16,
+                  fontSize: 15,
                   letterSpacing: -0.5,
                   shadows: [
                     Shadow(color: Colors.black, offset: Offset(1, 1)),
                     Shadow(color: LegoTheme.yellow, offset: Offset(-0.5, -0.5)),
                   ],
                 ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              'Shop Catalog',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: 15,
-                letterSpacing: 0.2,
               ),
             ),
           ],

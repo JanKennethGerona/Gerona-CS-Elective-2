@@ -30,7 +30,7 @@ class ProductService {
   bool get isConnectedToSupabase =>
       _client != null && SupabaseConfig.isConfigured;
 
-  // Authentic LEGO Sets & Bricks fallback / demo data
+  // Authentic LEGO Sets & Bricks fallback / demo data (using official Brickset set photo CDN)
   final List<Product> _mockProducts = [
     const Product(
       id: 1,
@@ -38,7 +38,7 @@ class ProductService {
       description: '7,541 pieces. Features quad laser cannons, landing legs, and lowering ramp.',
       price: 849.99,
       stock: 5,
-      imageUrl: 'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/75192-1.jpg',
     ),
     const Product(
       id: 2,
@@ -46,7 +46,7 @@ class ProductService {
       description: '878 pieces. Interchangeable green leaves and vibrant pink cherry blossom blooms.',
       price: 49.99,
       stock: 28,
-      imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/10281-1.jpg',
     ),
     const Product(
       id: 3,
@@ -54,7 +54,7 @@ class ProductService {
       description: '2,704 pieces. Authentic orange bodywork, red suspension springs, and working gearbox.',
       price: 299.99,
       stock: 8,
-      imageUrl: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/42056-1.jpg',
     ),
     const Product(
       id: 4,
@@ -62,7 +62,7 @@ class ProductService {
       description: '1,969 pieces. Meter-high rocket model with 3 removable stages and lunar lander.',
       price: 119.99,
       stock: 14,
-      imageUrl: 'https://images.unsplash.com/photo-1611604548018-d56bbd85d681?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/92176-1.jpg',
     ),
     const Product(
       id: 5,
@@ -70,7 +70,7 @@ class ProductService {
       description: '1,426 pieces. 3-in-1 set builds a Castle, Tower with catapult, or Medieval market.',
       price: 99.99,
       stock: 20,
-      imageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/31120-1.jpg',
     ),
     const Product(
       id: 6,
@@ -78,7 +78,7 @@ class ProductService {
       description: '1,074 pieces. Build your own 1970s Stratocaster guitar with 65 Princeton Reverb amp.',
       price: 119.00,
       stock: 15,
-      imageUrl: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/21329-1.jpg',
     ),
     const Product(
       id: 7,
@@ -86,7 +86,7 @@ class ProductService {
       description: '790 pieces in 33 different colors, including windows, doors, and wheels.',
       price: 59.99,
       stock: 35,
-      imageUrl: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/10698-1.jpg',
     ),
     const Product(
       id: 8,
@@ -94,23 +94,23 @@ class ProductService {
       description: '6,020 pieces. Detailed microscale model featuring towers, turrets, and classrooms.',
       price: 469.99,
       stock: 6,
-      imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/71043-1.jpg',
     ),
     const Product(
       id: 9,
-      name: 'LEGO Speed Champions Ferrari F40',
-      description: '318 pieces. Iconic supercar model with interchangeable rims and driver minifigure.',
+      name: 'LEGO Speed Champions Ferrari F8 Tributo',
+      description: '275 pieces. Authentic supercar replica with driver minifigure in racing suit.',
       price: 26.99,
       stock: 45,
-      imageUrl: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/76895-1.jpg',
     ),
     const Product(
       id: 10,
-      name: 'LEGO City Space Research Shuttle',
+      name: 'LEGO City Space Mars Shuttle',
       description: '273 pieces. Research shuttle with opening cockpit, 2 cargo doors, and rover.',
       price: 39.99,
       stock: 30,
-      imageUrl: 'https://images.unsplash.com/photo-1517976487507-59a5e11d3839?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/60226-1.jpg',
     ),
     const Product(
       id: 11,
@@ -118,7 +118,7 @@ class ProductService {
       description: '939 pieces. 16 individual stems crafted from plant-based plastic elements.',
       price: 59.99,
       stock: 22,
-      imageUrl: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/10313-1.jpg',
     ),
     const Product(
       id: 12,
@@ -126,7 +126,7 @@ class ProductService {
       description: '468 pieces. Features National Gallery, Nelson Column, London Eye, and Big Ben.',
       price: 39.99,
       stock: 25,
-      imageUrl: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/21034-1.jpg',
     ),
     const Product(
       id: 13,
@@ -134,15 +134,15 @@ class ProductService {
       description: '590 pieces. Golden gauntlet with vibrant Infinity Stones and sturdy display stand.',
       price: 79.99,
       stock: 18,
-      imageUrl: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/76191-1.jpg',
     ),
     const Product(
       id: 14,
-      name: 'LEGO Minifigures Mystery Pack',
+      name: 'LEGO Minifigures Series 24',
       description: '1 mystery collectible minifigure with accessories and collector leaflet.',
       price: 4.99,
       stock: 120,
-      imageUrl: 'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/71037-0.jpg',
     ),
     const Product(
       id: 15,
@@ -150,15 +150,15 @@ class ProductService {
       description: '231 pieces. Interactive Mario figure with LCD screens and speaker.',
       price: 59.99,
       stock: 20,
-      imageUrl: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/71360-1.jpg',
     ),
     const Product(
       id: 16,
-      name: 'LEGO Disney Cinderella Carriage',
-      description: '237 pieces. Gold and white horse-drawn carriage with Cinderella minifigure.',
+      name: 'LEGO Disney Ariel Underwater Palace',
+      description: '498 pieces. Underwater palace with slide, furniture, and Ariel dolphin chariot.',
       price: 39.99,
       stock: 24,
-      imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600',
+      imageUrl: 'https://images.brickset.com/sets/images/43207-1.jpg',
     ),
   ];
 
