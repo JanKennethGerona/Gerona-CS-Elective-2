@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
+import '../utils/lego_theme.dart';
 
 class PaginationControls extends StatelessWidget {
   const PaginationControls({super.key});
@@ -8,7 +9,6 @@ class PaginationControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProductProvider>();
-    final theme = Theme.of(context);
 
     if (provider.totalCount == 0) {
       return const SizedBox.shrink();
@@ -20,13 +20,14 @@ class PaginationControls extends StatelessWidget {
         : (provider.currentPage * provider.pageSize);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: const BoxDecoration(
         color: Colors.white,
+        border: Border(top: BorderSide(color: Color(0xFFDCD7CC), width: 2.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            offset: const Offset(0, -2),
+            color: Color(0x15000000),
+            offset: Offset(0, -2),
             blurRadius: 6,
           ),
         ],
@@ -36,40 +37,40 @@ class PaginationControls extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Top Row: Showing items info & Page Size Switcher (6 or 8)
+            // Top Row: Showing items info & Page Size Selector
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    '$startItem–$endItem of ${provider.totalCount} products',
+                    'Showing $startItem–$endItem of ${provider.totalCount} items',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w500,
+                      color: LegoTheme.black,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-                // Page Size Switcher (Show 6 or 8 products per page)
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'Per page: ',
+                    const Text(
+                      'Per plate: ',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade600,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 4),
-                    _PageSizeChoice(
+                    _LegoPageSizeChoice(
                       size: 6,
                       isSelected: provider.pageSize == 6,
                       onTap: () => provider.setPageSize(6),
                     ),
                     const SizedBox(width: 4),
-                    _PageSizeChoice(
+                    _LegoPageSizeChoice(
                       size: 8,
                       isSelected: provider.pageSize == 8,
                       onTap: () => provider.setPageSize(8),
@@ -80,7 +81,7 @@ class PaginationControls extends StatelessWidget {
             ),
             const SizedBox(height: 6),
 
-            // Bottom Row: Navigation buttons (Prev, Page 1..N, Next)
+            // Bottom Row: Navigation buttons (Previous, Page Numbers, Next)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -88,18 +89,30 @@ class PaginationControls extends StatelessWidget {
                 SizedBox(
                   width: 32,
                   height: 32,
-                  child: IconButton.filledTonal(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.chevron_left, size: 18),
-                    tooltip: 'Previous Page',
-                    onPressed: provider.hasPrevPage && !provider.isLoading
+                  child: InkWell(
+                    onTap: provider.hasPrevPage && !provider.isLoading
                         ? () => provider.previousPage()
                         : null,
+                    borderRadius: BorderRadius.circular(6),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: provider.hasPrevPage ? LegoTheme.red : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: provider.hasPrevPage ? Colors.black26 : Colors.transparent,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.chevron_left,
+                        size: 20,
+                        color: provider.hasPrevPage ? Colors.white : Colors.grey.shade400,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
 
-                // Page Number Buttons
+                // Page Number Buttons (LEGO bricks style)
                 Flexible(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -117,30 +130,31 @@ class PaginationControls extends StatelessWidget {
                                 : () => provider.goToPage(page),
                             borderRadius: BorderRadius.circular(6),
                             child: Container(
-                              width: 28,
-                              height: 28,
+                              width: 30,
+                              height: 30,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isCurrent
-                                    ? theme.colorScheme.primary
-                                    : Colors.transparent,
+                                color: isCurrent ? LegoTheme.blue : Colors.white,
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(
-                                  color: isCurrent
-                                      ? theme.colorScheme.primary
-                                      : Colors.grey.shade300,
+                                  color: isCurrent ? Colors.black38 : const Color(0xFFDCD7CC),
+                                  width: 2,
                                 ),
+                                boxShadow: isCurrent
+                                    ? const [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          offset: Offset(0, 2),
+                                        )
+                                      ]
+                                    : null,
                               ),
                               child: Text(
                                 '$page',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: isCurrent
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                  color: isCurrent
-                                      ? Colors.white
-                                      : Colors.black87,
+                                  fontWeight: FontWeight.w900,
+                                  color: isCurrent ? Colors.white : LegoTheme.black,
                                 ),
                               ),
                             ),
@@ -156,13 +170,25 @@ class PaginationControls extends StatelessWidget {
                 SizedBox(
                   width: 32,
                   height: 32,
-                  child: IconButton.filledTonal(
-                    padding: EdgeInsets.zero,
-                    icon: const Icon(Icons.chevron_right, size: 18),
-                    tooltip: 'Next Page',
-                    onPressed: provider.hasNextPage && !provider.isLoading
+                  child: InkWell(
+                    onTap: provider.hasNextPage && !provider.isLoading
                         ? () => provider.nextPage()
                         : null,
+                    borderRadius: BorderRadius.circular(6),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: provider.hasNextPage ? LegoTheme.red : Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: provider.hasNextPage ? Colors.black26 : Colors.transparent,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.chevron_right,
+                        size: 20,
+                        color: provider.hasNextPage ? Colors.white : Colors.grey.shade400,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -174,12 +200,12 @@ class PaginationControls extends StatelessWidget {
   }
 }
 
-class _PageSizeChoice extends StatelessWidget {
+class _LegoPageSizeChoice extends StatelessWidget {
   final int size;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _PageSizeChoice({
+  const _LegoPageSizeChoice({
     required this.size,
     required this.isSelected,
     required this.onTap,
@@ -187,23 +213,24 @@ class _PageSizeChoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(5),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
         decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.primary
-              : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(4),
+          color: isSelected ? LegoTheme.red : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(
+            color: isSelected ? Colors.black26 : Colors.grey.shade300,
+            width: 1.5,
+          ),
         ),
         child: Text(
           '$size',
           style: TextStyle(
             fontSize: 11,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
             color: isSelected ? Colors.white : Colors.grey.shade700,
           ),
         ),

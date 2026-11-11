@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
+import '../utils/lego_theme.dart';
 
 class PriceFilterSlider extends StatefulWidget {
   const PriceFilterSlider({super.key});
@@ -35,176 +36,231 @@ class _PriceFilterSliderState extends State<PriceFilterSlider> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProductProvider>();
-    final theme = Theme.of(context);
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade200),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: LegoTheme.yellow, width: 3),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1F000000),
+            offset: Offset(0, 4),
+            blurRadius: 8,
+          ),
+        ],
       ),
-      color: Colors.grey.shade50,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header stud strip
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: const BoxDecoration(
+              color: LegoTheme.yellow,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+            ),
+            child: Row(
               children: [
-                Icon(Icons.tune, size: 18, color: theme.colorScheme.primary),
+                const Icon(Icons.tune_rounded, size: 18, color: LegoTheme.black),
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Text(
-                    'Price Filter',
+                    'Price Filter (Bricks)',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                      color: LegoTheme.black,
+                      letterSpacing: 0.5,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    color: LegoTheme.red,
+                    borderRadius: BorderRadius.circular(6),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
                   ),
                   child: Text(
                     '\$${_currentValues.start.toStringAsFixed(0)} - \$${_currentValues.end.toStringAsFixed(0)}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
                       fontSize: 12,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+          ),
 
-            // The Price Range Slider
-            RangeSlider(
-              values: _currentValues,
-              min: ProductProvider.minAllowedPrice,
-              max: ProductProvider.maxAllowedPrice,
-              divisions: 40,
-              activeColor: theme.colorScheme.primary,
-              inactiveColor: Colors.grey.shade300,
-              labels: RangeLabels(
-                '\$${_currentValues.start.toStringAsFixed(0)}',
-                '\$${_currentValues.end.toStringAsFixed(0)}',
-              ),
-              onChanged: (RangeValues newValues) {
-                setState(() {
-                  _currentValues = newValues;
-                });
-              },
-              onChangeEnd: (RangeValues finalValues) {
-                provider.setPriceRange(finalValues);
-              },
-            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // The Price Range Slider (LEGO Red active track)
+                RangeSlider(
+                  values: _currentValues,
+                  min: ProductProvider.minAllowedPrice,
+                  max: ProductProvider.maxAllowedPrice,
+                  divisions: 40,
+                  activeColor: LegoTheme.red,
+                  inactiveColor: Colors.grey.shade300,
+                  labels: RangeLabels(
+                    '\$${_currentValues.start.toStringAsFixed(0)}',
+                    '\$${_currentValues.end.toStringAsFixed(0)}',
+                  ),
+                  onChanged: (RangeValues newValues) {
+                    setState(() {
+                      _currentValues = newValues;
+                    });
+                  },
+                  onChangeEnd: (RangeValues finalValues) {
+                    provider.setPriceRange(finalValues);
+                  },
+                ),
 
-            // Quick preset chips
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _PresetChip(
-                    label: 'All',
-                    isSelected: _currentValues.start == ProductProvider.minAllowedPrice &&
-                        _currentValues.end == ProductProvider.maxAllowedPrice,
-                    onTap: () => _applyQuickPreset(
-                      ProductProvider.minAllowedPrice,
-                      ProductProvider.maxAllowedPrice,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  _PresetChip(
-                    label: 'Under \$50',
-                    isSelected: _currentValues.start == 0 && _currentValues.end == 50,
-                    onTap: () => _applyQuickPreset(0, 50),
-                  ),
-                  const SizedBox(width: 6),
-                  _PresetChip(
-                    label: '\$50 - \$100',
-                    isSelected: _currentValues.start == 50 && _currentValues.end == 100,
-                    onTap: () => _applyQuickPreset(50, 100),
-                  ),
-                  const SizedBox(width: 6),
-                  _PresetChip(
-                    label: '\$100 - \$200',
-                    isSelected: _currentValues.start == 100 && _currentValues.end == 200,
-                    onTap: () => _applyQuickPreset(100, 200),
-                  ),
-                  const SizedBox(width: 6),
-                  _PresetChip(
-                    label: '\$200+',
-                    isSelected: _currentValues.start == 200 &&
-                        _currentValues.end == ProductProvider.maxAllowedPrice,
-                    onTap: () => _applyQuickPreset(
-                      200,
-                      ProductProvider.maxAllowedPrice,
-                    ),
-                  ),
-                  if (provider.isFiltered) ...[
-                    const SizedBox(width: 6),
-                    TextButton.icon(
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        visualDensity: VisualDensity.compact,
+                // Quick preset brick chips
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _LegoFilterChip(
+                        label: 'All',
+                        color: LegoTheme.blue,
+                        isSelected: _currentValues.start == ProductProvider.minAllowedPrice &&
+                            _currentValues.end == ProductProvider.maxAllowedPrice,
+                        onTap: () => _applyQuickPreset(
+                          ProductProvider.minAllowedPrice,
+                          ProductProvider.maxAllowedPrice,
+                        ),
                       ),
-                      icon: const Icon(Icons.clear, size: 14),
-                      label: const Text('Reset', style: TextStyle(fontSize: 12)),
-                      onPressed: () {
-                        provider.resetFilters();
-                      },
-                    ),
-                  ],
-                ],
-              ),
+                      const SizedBox(width: 6),
+                      _LegoFilterChip(
+                        label: 'Under \$50',
+                        color: LegoTheme.green,
+                        isSelected: _currentValues.start == 0 && _currentValues.end == 50,
+                        onTap: () => _applyQuickPreset(0, 50),
+                      ),
+                      const SizedBox(width: 6),
+                      _LegoFilterChip(
+                        label: '\$50 - \$100',
+                        color: LegoTheme.yellow,
+                        textColor: LegoTheme.black,
+                        isSelected: _currentValues.start == 50 && _currentValues.end == 100,
+                        onTap: () => _applyQuickPreset(50, 100),
+                      ),
+                      const SizedBox(width: 6),
+                      _LegoFilterChip(
+                        label: '\$100 - \$200',
+                        color: LegoTheme.red,
+                        isSelected: _currentValues.start == 100 && _currentValues.end == 200,
+                        onTap: () => _applyQuickPreset(100, 200),
+                      ),
+                      const SizedBox(width: 6),
+                      _LegoFilterChip(
+                        label: '\$200+',
+                        color: LegoTheme.blue,
+                        isSelected: _currentValues.start == 200 &&
+                            _currentValues.end == ProductProvider.maxAllowedPrice,
+                        onTap: () => _applyQuickPreset(
+                          200,
+                          ProductProvider.maxAllowedPrice,
+                        ),
+                      ),
+                      if (provider.isFiltered) ...[
+                        const SizedBox(width: 6),
+                        InkWell(
+                          onTap: () => provider.resetFilters(),
+                          borderRadius: BorderRadius.circular(6),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Colors.grey.shade400),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.close, size: 12, color: Colors.black87),
+                                SizedBox(width: 2),
+                                Text(
+                                  'Reset',
+                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _PresetChip extends StatelessWidget {
+class _LegoFilterChip extends StatelessWidget {
   final String label;
+  final Color color;
+  final Color textColor;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _PresetChip({
+  const _LegoFilterChip({
     required this.label,
+    required this.color,
+    this.textColor = Colors.white,
     required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(6),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          color: isSelected ? color : Colors.white,
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
-            color: isSelected ? theme.colorScheme.primary : Colors.grey.shade300,
+            color: isSelected ? Colors.black.withValues(alpha: 0.3) : Colors.grey.shade300,
+            width: 2,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.25),
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 11,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Colors.white : Colors.black87,
+            fontWeight: FontWeight.w900,
+            color: isSelected ? textColor : Colors.grey.shade800,
           ),
         ),
       ),

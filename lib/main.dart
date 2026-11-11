@@ -5,6 +5,7 @@ import 'config/supabase_config.dart';
 import 'providers/auth_provider.dart';
 import 'providers/product_provider.dart';
 import 'screens/auth_gate.dart';
+import 'utils/lego_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,15 +37,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
       ],
       child: MaterialApp(
-        title: 'Supabase Shop',
+        title: 'BRICKED Shop',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF24B47E), // Supabase Emerald Green
+            seedColor: LegoTheme.red,
+            primary: LegoTheme.red,
+            secondary: LegoTheme.yellow,
             brightness: Brightness.light,
           ),
           useMaterial3: true,
-          scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+          scaffoldBackgroundColor: LegoTheme.plateBg,
           cardTheme: const CardThemeData(
             color: Colors.white,
           ),

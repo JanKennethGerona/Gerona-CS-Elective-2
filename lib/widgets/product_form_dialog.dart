@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../providers/product_provider.dart';
+import '../utils/lego_theme.dart';
 
 class ProductFormDialog extends StatefulWidget {
   final Product? productToEdit;
@@ -67,7 +68,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
     final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
     final stock = int.tryParse(_stockController.text.trim()) ?? 0;
     final imageUrl = _imageUrlController.text.trim().isEmpty
-        ? 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500'
+        ? 'https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=500' // LEGO toy Unsplash
         : _imageUrlController.text.trim();
 
     bool success;
@@ -98,18 +99,16 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
         scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(
-              isEditing
-                  ? 'Product "$name" updated successfully'
-                  : 'Product "$name" added successfully',
+              isEditing ? 'Updated "$name"' : 'Snapped "$name" into place!',
             ),
-            backgroundColor: Colors.green,
+            backgroundColor: LegoTheme.green,
           ),
         );
       } else {
         scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(provider.errorMessage ?? 'An error occurred'),
-            backgroundColor: Colors.red,
+            backgroundColor: LegoTheme.red,
           ),
         );
       }
@@ -119,7 +118,32 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(isEditing ? 'Edit Product' : 'Add New Product'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: LegoTheme.red, width: 3.5),
+      ),
+      titlePadding: EdgeInsets.zero,
+      title: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: const BoxDecoration(
+          color: LegoTheme.red,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.extension_rounded, color: LegoTheme.yellow),
+            const SizedBox(width: 8),
+            Text(
+              isEditing ? 'Edit Brick Item' : 'Assemble New Brick',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -129,13 +153,13 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Product Name *',
-                  hintText: 'e.g. Mechanical Keyboard',
+                  labelText: 'Brick Name *',
+                  hintText: 'e.g. Starfighter 500 Pcs',
                   border: OutlineInputBorder(),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
-                    return 'Please enter a product name';
+                    return 'Please enter a name';
                   }
                   return null;
                 },
@@ -146,7 +170,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                 maxLines: 2,
                 decoration: const InputDecoration(
                   labelText: 'Description',
-                  hintText: 'Product specifications and details...',
+                  hintText: 'Set details, brick count, minifigures...',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -183,15 +207,6 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                         labelText: 'Stock Qty',
                         border: OutlineInputBorder(),
                       ),
-                      validator: (val) {
-                        if (val != null && val.isNotEmpty) {
-                          final parsed = int.tryParse(val.trim());
-                          if (parsed == null || parsed < 0) {
-                            return 'Valid stock';
-                          }
-                        }
-                        return null;
-                      },
                     ),
                   ),
                 ],
@@ -212,9 +227,13 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
       actions: [
         TextButton(
           onPressed: _isSubmitting ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: LegoTheme.red,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
           onPressed: _isSubmitting ? null : _submit,
           child: _isSubmitting
               ? const SizedBox(
@@ -222,7 +241,10 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                 )
-              : Text(isEditing ? 'Save Changes' : 'Add Product'),
+              : Text(
+                  isEditing ? 'Save Changes' : 'Snap In Place',
+                  style: const TextStyle(fontWeight: FontWeight.w900),
+                ),
         ),
       ],
     );

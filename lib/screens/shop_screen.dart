@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../config/supabase_config.dart';
 import '../providers/auth_provider.dart';
 import '../providers/product_provider.dart';
+import '../utils/lego_theme.dart';
 import '../widgets/pagination_controls.dart';
 import '../widgets/price_filter_slider.dart';
 import '../widgets/product_card.dart';
@@ -44,11 +45,15 @@ class _ShopScreenState extends State<ShopScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: LegoTheme.red, width: 3),
+        ),
         title: const Row(
           children: [
-            Icon(Icons.cloud_outlined, color: Colors.blue),
+            Icon(Icons.widgets, color: LegoTheme.red),
             SizedBox(width: 8),
-            Text('Supabase Connection'),
+            Text('BRICKED Database', style: TextStyle(fontWeight: FontWeight.w900)),
           ],
         ),
         content: Column(
@@ -57,21 +62,22 @@ class _ShopScreenState extends State<ShopScreen> {
           children: [
             Text(
               SupabaseConfig.isConfigured
-                  ? 'Connected to your Supabase project:'
-                  : 'Currently in Offline / Demo Mode:',
+                  ? 'Connected to Live Supabase Project:'
+                  : 'Currently in Demo Mode:',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
               SupabaseConfig.isConfigured
                   ? SupabaseConfig.supabaseUrl
-                  : 'To link your live database, update "lib/config/supabase_config.dart" with your Supabase Project URL and anon key.\n\nRun the included "supabase_schema.sql" in your Supabase SQL Editor to set up the products table.',
+                  : 'Configure lib/config/supabase_config.dart to connect.',
               style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
             ),
           ],
         ),
         actions: [
-          TextButton(
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: LegoTheme.red),
             onPressed: () => Navigator.pop(ctx),
             child: const Text('Close'),
           ),
@@ -83,65 +89,85 @@ class _ShopScreenState extends State<ShopScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProductProvider>();
-    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: LegoTheme.plateBg,
       appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        backgroundColor: LegoTheme.red,
+        elevation: 3,
+        title: Row(
           children: [
-            Text(
-              'Supabase Shop',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+            // BRICKED Badge Logo in AppBar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: LegoTheme.red,
+                border: Border.all(color: LegoTheme.yellow, width: 2),
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    offset: Offset(1, 1),
+                  ),
+                ],
+              ),
+              child: const Text(
+                'BRICKED',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16,
+                  letterSpacing: -0.5,
+                  shadows: [
+                    Shadow(color: Colors.black, offset: Offset(1, 1)),
+                    Shadow(color: LegoTheme.yellow, offset: Offset(-0.5, -0.5)),
+                  ],
+                ),
+              ),
             ),
-            Text(
-              'Price Filtering & Pagination',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
+            const SizedBox(width: 10),
+            const Text(
+              'Shop Catalog',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 15,
+                letterSpacing: 0.2,
+              ),
             ),
           ],
         ),
         actions: [
-          // Connection status chip
+          // Database status indicator (Green/Yellow brick pill)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             child: InkWell(
               onTap: _showConfigDialog,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(8),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: provider.isConnectedToSupabase
-                      ? Colors.green.shade100
-                      : Colors.amber.shade100,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: provider.isConnectedToSupabase
-                        ? Colors.green.shade400
-                        : Colors.amber.shade400,
-                  ),
+                      ? LegoTheme.green
+                      : LegoTheme.yellow,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.white, width: 1.5),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      provider.isConnectedToSupabase
-                          ? Icons.cloud_done
-                          : Icons.cloud_off,
+                      provider.isConnectedToSupabase ? Icons.cloud_done : Icons.cloud_off,
                       size: 13,
-                      color: provider.isConnectedToSupabase
-                          ? Colors.green.shade800
-                          : Colors.amber.shade900,
+                      color: provider.isConnectedToSupabase ? Colors.white : LegoTheme.black,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      provider.isConnectedToSupabase ? 'Live DB' : 'Demo Mode',
+                      provider.isConnectedToSupabase ? 'LIVE' : 'DEMO',
                       style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: provider.isConnectedToSupabase
-                            ? Colors.green.shade800
-                            : Colors.amber.shade900,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: provider.isConnectedToSupabase ? Colors.white : LegoTheme.black,
                       ),
                     ),
                   ],
@@ -149,36 +175,41 @@ class _ShopScreenState extends State<ShopScreen> {
               ),
             ),
           ),
+          // Filter toggle button
           IconButton(
             icon: Icon(
               _showFilter ? Icons.filter_alt : Icons.filter_alt_outlined,
-              color: _showFilter ? theme.colorScheme.primary : null,
+              color: LegoTheme.yellow,
             ),
-            tooltip: 'Toggle Price Filter',
-            onPressed: () {
-              setState(() {
-                _showFilter = !_showFilter;
-              });
-            },
+            tooltip: 'Toggle Filter',
+            onPressed: () => setState(() => _showFilter = !_showFilter),
           ),
+          // Add product button
           IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            tooltip: 'Add Product',
+            icon: const Icon(Icons.add_circle, color: LegoTheme.yellow),
+            tooltip: 'Add Brick',
             onPressed: _showAddDialog,
           ),
+          // User / Logout Avatar
           Consumer<AuthProvider>(
             builder: (context, auth, _) {
-              final userEmail = auth.currentUser?.email ?? 'User';
+              final userEmail = auth.currentUser?.email ?? 'Builder';
               return PopupMenuButton<String>(
-                icon: CircleAvatar(
-                  radius: 13,
-                  backgroundColor: theme.colorScheme.primary,
+                icon: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: LegoTheme.yellow,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  alignment: Alignment.center,
                   child: Text(
-                    userEmail.isNotEmpty ? userEmail[0].toUpperCase() : 'U',
+                    userEmail.isNotEmpty ? userEmail[0].toUpperCase() : 'B',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      color: LegoTheme.black,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
@@ -194,10 +225,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Signed in as',
-                          style: TextStyle(fontSize: 11, color: Colors.grey),
-                        ),
+                        const Text('Signed in as', style: TextStyle(fontSize: 11, color: Colors.grey)),
                         Text(
                           userEmail,
                           style: const TextStyle(
@@ -214,9 +242,9 @@ class _ShopScreenState extends State<ShopScreen> {
                     value: 'logout',
                     child: Row(
                       children: [
-                        Icon(Icons.logout, size: 18, color: Colors.red),
+                        Icon(Icons.logout, size: 18, color: LegoTheme.red),
                         SizedBox(width: 8),
-                        Text('Sign Out', style: TextStyle(color: Colors.red)),
+                        Text('Sign Out', style: TextStyle(color: LegoTheme.red, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -227,112 +255,134 @@ class _ShopScreenState extends State<ShopScreen> {
           const SizedBox(width: 4),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 4),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search products by name...',
-                prefixIcon: const Icon(Icons.search, size: 20),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        onPressed: () {
-                          _searchController.clear();
-                          provider.setSearchQuery('');
-                        },
-                      )
-                    : null,
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+          // Subtle LEGO studs baseplate background
+          Positioned.fill(
+            child: CustomPaint(
+              painter: LegoStudPainter(spacing: 34, radius: 4.5),
+            ),
+          ),
+
+          Column(
+            children: [
+              // LEGO Search Bar
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xFFDCD7CC), width: 2),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x0F000000),
+                        offset: Offset(0, 2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search bricks by name...',
+                      hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                      prefixIcon: const Icon(Icons.search, size: 20, color: LegoTheme.blue),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 18, color: Colors.grey),
+                              onPressed: () {
+                                _searchController.clear();
+                                provider.setSearchQuery('');
+                              },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                    ),
+                    onChanged: (val) => provider.setSearchQuery(val),
+                  ),
                 ),
               ),
-              onChanged: (val) {
-                provider.setSearchQuery(val);
-              },
-            ),
-          ),
 
-          // Collapsible Price Filter Range Slider
-          AnimatedCrossFade(
-            firstChild: const PriceFilterSlider(),
-            secondChild: const SizedBox.shrink(),
-            crossFadeState: _showFilter
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            duration: const Duration(milliseconds: 200),
-          ),
+              // Collapsible LEGO Price Range Filter Slider
+              AnimatedCrossFade(
+                firstChild: const PriceFilterSlider(),
+                secondChild: const SizedBox.shrink(),
+                crossFadeState: _showFilter
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                duration: const Duration(milliseconds: 200),
+              ),
 
-          // Main Product Area
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () => provider.fetchProducts(),
-              child: provider.isLoading && provider.products.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : provider.products.isEmpty
-                      ? _buildEmptyState(provider)
-                      : Stack(
-                          children: [
-                            GridView.builder(
-                              padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.70,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                              ),
-                              itemCount: provider.products.length,
-                              itemBuilder: (context, index) {
-                                final product = provider.products[index];
-                                return ProductCard(product: product);
-                              },
-                            ),
-                            if (provider.isLoading)
-                              Positioned(
-                                top: 8,
-                                right: 16,
-                                child: Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 4,
-                                      )
-                                    ],
+              // Main Products Grid
+              Expanded(
+                child: RefreshIndicator(
+                  color: LegoTheme.red,
+                  onRefresh: () => provider.fetchProducts(),
+                  child: provider.isLoading && provider.products.isEmpty
+                      ? const Center(child: CircularProgressIndicator(color: LegoTheme.red))
+                      : provider.products.isEmpty
+                          ? _buildEmptyState(provider)
+                          : Stack(
+                              children: [
+                                GridView.builder(
+                                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 0.70,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
                                   ),
-                                  child: const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  ),
+                                  itemCount: provider.products.length,
+                                  itemBuilder: (context, index) {
+                                    final product = provider.products[index];
+                                    return ProductCard(product: product);
+                                  },
                                 ),
-                              ),
-                          ],
-                        ),
-            ),
+                                if (provider.isLoading)
+                                  Positioned(
+                                    top: 8,
+                                    right: 16,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 4,
+                                          )
+                                        ],
+                                      ),
+                                      child: const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: LegoTheme.red,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
       bottomNavigationBar: const PaginationControls(),
-      floatingActionButton: FloatingActionButton.small(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: LegoTheme.red,
+        foregroundColor: Colors.white,
+        elevation: 4,
         onPressed: _showAddDialog,
-        tooltip: 'Add Product',
-        child: const Icon(Icons.add),
+        tooltip: 'Add Brick',
+        child: const Icon(Icons.add, size: 28),
       ),
     );
   }
@@ -345,17 +395,18 @@ class _ShopScreenState extends State<ShopScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off_rounded,
+            const Icon(
+              Icons.view_in_ar_rounded,
               size: 56,
-              color: Colors.grey.shade400,
+              color: Color(0xFFC7C2B6),
             ),
             const SizedBox(height: 12),
             const Text(
-              'No Products Found',
+              'No Bricks Found',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
+                color: LegoTheme.black,
               ),
             ),
             const SizedBox(height: 6),
@@ -368,13 +419,17 @@ class _ShopScreenState extends State<ShopScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton.tonalIcon(
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: LegoTheme.blue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
               onPressed: () {
                 _searchController.clear();
                 provider.resetFilters();
               },
-              icon: const Icon(Icons.filter_alt_off, size: 18),
-              label: const Text('Reset Filter & Search'),
+              icon: const Icon(Icons.refresh, size: 18),
+              label: const Text('Reset Filter & Search', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../providers/product_provider.dart';
+import '../utils/lego_theme.dart';
 import 'product_form_dialog.dart';
 
 class ProductCard extends StatelessWidget {
@@ -23,15 +24,28 @@ class ProductCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Product'),
-        content: Text('Are you sure you want to delete "${product.name}"?'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: const BorderSide(color: LegoTheme.red, width: 3),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.delete_outline, color: LegoTheme.red),
+            SizedBox(width: 8),
+            Text('Disassemble Brick?', style: TextStyle(fontWeight: FontWeight.w900)),
+          ],
+        ),
+        content: Text('Are you sure you want to remove "${product.name}" from your catalog?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(
+              backgroundColor: LegoTheme.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
             onPressed: () async {
               Navigator.pop(ctx);
               final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -39,13 +53,13 @@ class ProductCard extends StatelessWidget {
               if (success) {
                 scaffoldMessenger.showSnackBar(
                   SnackBar(
-                    content: Text('Deleted "${product.name}" successfully'),
-                    backgroundColor: Colors.green,
+                    content: Text('Removed "${product.name}"'),
+                    backgroundColor: LegoTheme.green,
                   ),
                 );
               }
             },
-            child: const Text('Delete'),
+            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -54,61 +68,81 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      elevation: 1,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.shade200),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFDCD7CC), width: 2),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1A000000),
+            offset: Offset(0, 3),
+            blurRadius: 6,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product Image Banner (Expanded to fill available height dynamically without overflow)
+          // Top Studs simulation on the card header
+          Container(
+            height: 6,
+            decoration: const BoxDecoration(
+              color: LegoTheme.red,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(9)),
+            ),
+          ),
+
+          // Product Image Banner
           Expanded(
             flex: 5,
             child: Stack(
               fit: StackFit.expand,
               children: [
                 Container(
-                  color: Colors.grey.shade100,
+                  color: const Color(0xFFF6F4EE),
                   child: product.imageUrl != null && product.imageUrl!.isNotEmpty
                       ? Image.network(
                           product.imageUrl!,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Center(
+                          errorBuilder: (context, error, stackTrace) => const Center(
                             child: Icon(
-                              Icons.shopping_bag_outlined,
-                              size: 36,
-                              color: Colors.grey.shade400,
+                              Icons.widgets_outlined,
+                              size: 38,
+                              color: Color(0xFFC7C2B6),
                             ),
                           ),
                         )
-                      : Center(
+                      : const Center(
                           child: Icon(
-                            Icons.shopping_bag_outlined,
-                            size: 36,
-                            color: Colors.grey.shade400,
+                            Icons.widgets_outlined,
+                            size: 38,
+                            color: Color(0xFFC7C2B6),
                           ),
                         ),
                 ),
-                // Price Tag Chip
+                // Price Tag (LEGO Yellow Brick Badge)
                 Positioned(
-                  top: 8,
-                  right: 8,
+                  top: 6,
+                  right: 6,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.75),
-                      borderRadius: BorderRadius.circular(12),
+                      color: LegoTheme.yellow,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: Colors.black87, width: 1.5),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(1, 1),
+                        ),
+                      ],
                     ),
                     child: Text(
                       '\$${product.price.toStringAsFixed(2)}',
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        color: LegoTheme.black,
+                        fontWeight: FontWeight.w900,
                         fontSize: 11,
                       ),
                     ),
@@ -118,7 +152,7 @@ class ProductCard extends StatelessWidget {
             ),
           ),
 
-          // Content info (compact and non-overflowing)
+          // Content info (compact & non-overflowing)
           Padding(
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
             child: Column(
@@ -131,8 +165,9 @@ class ProductCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     fontSize: 13,
+                    color: LegoTheme.black,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -140,7 +175,7 @@ class ProductCard extends StatelessWidget {
                 // Description
                 Text(
                   product.description.isEmpty
-                      ? 'No description available'
+                      ? 'Custom LEGO brick item'
                       : product.description,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -151,51 +186,72 @@ class ProductCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
 
-                // Stock & Actions Row
+                // Stock Badge & Actions Row
                 Row(
                   children: [
                     // Stock badge
                     Expanded(
-                      child: Text(
-                        product.stock > 0
-                            ? '${product.stock} in stock'
-                            : 'Out of stock',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
                           color: product.stock > 0
-                              ? Colors.green.shade800
-                              : Colors.red.shade800,
+                              ? LegoTheme.green.withValues(alpha: 0.12)
+                              : LegoTheme.red.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: product.stock > 0 ? LegoTheme.green : LegoTheme.red,
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          product.stock > 0
+                              ? '${product.stock} bricks'
+                              : 'Out of stock',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: product.stock > 0 ? LegoTheme.green : LegoTheme.red,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 4),
 
-                    // Actions menu (Edit, Delete)
+                    // Edit Button
                     InkWell(
                       onTap: () => _showEditDialog(context),
-                      borderRadius: BorderRadius.circular(6),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Icon(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: LegoTheme.blue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Icon(
                           Icons.edit_outlined,
-                          size: 16,
-                          color: theme.colorScheme.primary,
+                          size: 15,
+                          color: LegoTheme.blue,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 2),
+                    const SizedBox(width: 3),
+
+                    // Delete Button
                     InkWell(
                       onTap: () => _confirmDelete(context),
-                      borderRadius: BorderRadius.circular(6),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: LegoTheme.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
                         child: const Icon(
                           Icons.delete_outline,
-                          size: 16,
-                          color: Colors.redAccent,
+                          size: 15,
+                          color: LegoTheme.red,
                         ),
                       ),
                     ),
