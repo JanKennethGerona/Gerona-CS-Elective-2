@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
@@ -66,6 +67,16 @@ class ProductCard extends StatelessWidget {
     );
   }
 
+  // Resolves image URL with a CORS proxy on Flutter Web to bypass browser CanvasKit CORS blocking
+  String _resolveImageUrl(String url) {
+    if (kIsWeb && (url.startsWith('http://') || url.startsWith('https://'))) {
+      if (!url.contains('images.weserv.nl')) {
+        return 'https://images.weserv.nl/?url=${Uri.encodeComponent(url)}&w=400';
+      }
+    }
+    return url;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -103,7 +114,7 @@ class ProductCard extends StatelessWidget {
                   color: Colors.white,
                   child: product.imageUrl != null && product.imageUrl!.isNotEmpty
                       ? Image.network(
-                          product.imageUrl!,
+                          _resolveImageUrl(product.imageUrl!),
                           fit: BoxFit.contain,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
