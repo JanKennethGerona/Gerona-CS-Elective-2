@@ -15,6 +15,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _firstController = TextEditingController();
+  final _lastController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  bool _isSignUp = false;
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -22,32 +27,61 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _firstController.dispose();
+    _lastController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _submitEmailSignIn() async {
+  Future<void> _submitAuth() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
 
     final service = ref.read(supabaseServiceProvider);
     try {
-      final res = await service.signInWithEmail(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-      if (res?.user == null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sign-in failed. Check credentials or email confirmation.'),
-            backgroundColor: LegoTheme.red,
-          ),
+      if (_isSignUp) {
+        final res = await service.signUpWithEmail(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          firstname: _firstController.text.trim(),
+          lastname: _lastController.text.trim(),
         );
+        if (mounted) {
+          if (res?.user != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Account built successfully! Welcome builder.'),
+                backgroundColor: LegoTheme.green,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Please check your email to confirm registration.'),
+                backgroundColor: LegoTheme.yellow,
+              ),
+            );
+          }
+        }
+      } else {
+        final res = await service.signInWithEmail(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        if (res?.user == null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Sign-in failed. Check credentials or email confirmation.'),
+              backgroundColor: LegoTheme.red,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login error: $e'),
+            content: Text('${_isSignUp ? "Sign Up" : "Login"} error: $e'),
             backgroundColor: LegoTheme.red,
           ),
         );
@@ -202,15 +236,117 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    const Text(
-                                      'Builder Sign In',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w900,
-                                        color: LegoTheme.black,
-                                      ),
+                                    // Segment Tabs: Sign In vs Register
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: InkWell(
+                                            onTap: () => setState(() => _isSignUp = false),
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 10),
+                                              decoration: BoxDecoration(
+                                                color: !_isSignUp ? LegoTheme.blue : Colors.grey.shade100,
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: !_isSignUp ? Colors.black26 : Colors.grey.shade300,
+                                                  width: 2,
+                                                ),
+                                                boxShadow: !_isSignUp
+                                                    ? [
+                                                        const BoxShadow(
+                                                          color: Colors.black26,
+                                                          offset: Offset(0, 3),
+                                                        ),
+                                                      ]
+                                                    : null,
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'Sign In',
+                                                style: TextStyle(
+                                                  color: !_isSignUp ? Colors.white : Colors.grey.shade700,
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: InkWell(
+                                            onTap: () => setState(() => _isSignUp = true),
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 10),
+                                              decoration: BoxDecoration(
+                                                color: _isSignUp ? LegoTheme.green : Colors.grey.shade100,
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: _isSignUp ? Colors.black26 : Colors.grey.shade300,
+                                                  width: 2,
+                                                ),
+                                                boxShadow: _isSignUp
+                                                    ? [
+                                                        const BoxShadow(
+                                                          color: Colors.black26,
+                                                          offset: Offset(0, 3),
+                                                        ),
+                                                      ]
+                                                    : null,
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'Register',
+                                                style: TextStyle(
+                                                  color: _isSignUp ? Colors.white : Colors.grey.shade700,
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 16),
+                                    const SizedBox(height: 18),
+
+                                    // First & Last Name inputs (Sign Up only)
+                                    if (_isSignUp) ...[
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextFormField(
+                                              controller: _firstController,
+                                              decoration: const InputDecoration(
+                                                labelText: 'First Name *',
+                                                border: OutlineInputBorder(),
+                                                isDense: true,
+                                              ),
+                                              validator: (val) => _isSignUp && (val == null || val.trim().isEmpty)
+                                                  ? 'Required'
+                                                  : null,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: TextFormField(
+                                              controller: _lastController,
+                                              decoration: const InputDecoration(
+                                                labelText: 'Last Name *',
+                                                border: OutlineInputBorder(),
+                                                isDense: true,
+                                              ),
+                                              validator: (val) => _isSignUp && (val == null || val.trim().isEmpty)
+                                                  ? 'Required'
+                                                  : null,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 12),
+                                    ],
 
                                     // Email
                                     TextFormField(
@@ -225,6 +361,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
+                                        isDense: true,
                                       ),
                                       validator: (val) {
                                         if (val == null || val.trim().isEmpty) {
@@ -236,7 +373,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         return null;
                                       },
                                     ),
-                                    const SizedBox(height: 14),
+                                    const SizedBox(height: 12),
 
                                     // Password
                                     TextFormField(
@@ -258,20 +395,45 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
+                                        isDense: true,
                                       ),
                                       validator: (val) {
                                         if (val == null || val.trim().isEmpty) {
                                           return 'Please enter password';
                                         }
+                                        if (_isSignUp && val.length < 6) {
+                                          return 'Minimum 6 chars';
+                                        }
                                         return null;
                                       },
                                     ),
+
+                                    // Confirm Password (Sign Up only)
+                                    if (_isSignUp) ...[
+                                      const SizedBox(height: 12),
+                                      TextFormField(
+                                        controller: _confirmPasswordController,
+                                        obscureText: _obscurePassword,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Confirm Password *',
+                                          prefixIcon: Icon(Icons.lock_reset, color: LegoTheme.blue),
+                                          border: OutlineInputBorder(),
+                                          isDense: true,
+                                        ),
+                                        validator: (val) {
+                                          if (_isSignUp && val != _passwordController.text) {
+                                            return 'Passwords do not match';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
                                     const SizedBox(height: 20),
 
-                                    // Sign In Button
+                                    // Action Button
                                     FilledButton(
                                       style: FilledButton.styleFrom(
-                                        backgroundColor: LegoTheme.blue,
+                                        backgroundColor: _isSignUp ? LegoTheme.green : LegoTheme.blue,
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 14),
                                         shape: RoundedRectangleBorder(
@@ -281,7 +443,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                       ),
                                       onPressed: _isLoading
                                           ? null
-                                          : _submitEmailSignIn,
+                                          : _submitAuth,
                                       child: _isLoading
                                           ? const SizedBox(
                                               width: 20,
@@ -290,9 +452,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                                   strokeWidth: 2.5,
                                                   color: Colors.white),
                                             )
-                                          : const Text(
-                                              'Sign In',
-                                              style: TextStyle(
+                                          : Text(
+                                              _isSignUp ? 'Build Account' : 'Sign In',
+                                              style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w900,
                                               ),
@@ -330,32 +492,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           color: LegoTheme.black,
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 20),
-
-                                    // Switch to Register
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        const Text('Need a brick account?'),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      const SignUpPage()),
-                                            );
-                                          },
-                                          child: const Text(
-                                            'Sign Up',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w900,
-                                              color: LegoTheme.green,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
                                     ),
                                   ],
                                 ),
