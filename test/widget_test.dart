@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:my_first_flutter_ui/models/product.dart';
 import 'package:my_first_flutter_ui/providers/auth_providers.dart';
-import 'package:my_first_flutter_ui/providers/cart_provider.dart';
 import 'package:my_first_flutter_ui/widgets/product_card.dart';
 
 void main() {
