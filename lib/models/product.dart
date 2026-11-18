@@ -1,72 +1,87 @@
 class Product {
-  final dynamic id;
+  final int id;
+  final DateTime createdAt;
   final String name;
-  final String description;
-  final double price;
+  final String? description;
   final int stock;
   final String? imageUrl;
-  final DateTime? createdAt;
+  final int categoryId;
+  final double price;
+  final String? categoryName;
 
   const Product({
-    this.id,
+    required this.id,
+    required this.createdAt,
     required this.name,
-    this.description = '',
-    required this.price,
-    this.stock = 0,
+    this.description,
+    required this.stock,
     this.imageUrl,
-    this.createdAt,
+    required this.categoryId,
+    required this.price,
+    this.categoryName,
   });
 
+  bool get isOutOfStock => stock <= 0;
+
   factory Product.fromJson(Map<String, dynamic> json) {
+    String? catName;
+    if (json['categories'] != null && json['categories'] is Map) {
+      catName = json['categories']['name'] as String?;
+    } else if (json['category_name'] != null) {
+      catName = json['category_name'] as String?;
+    }
+
     return Product(
-      id: json['id'],
-      name: json['name'] as String? ?? 'Unnamed Product',
-      description: json['description'] as String? ?? '',
-      price: (json['price'] is num)
-          ? (json['price'] as num).toDouble()
-          : double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,
-      stock: (json['stock'] is num)
-          ? (json['stock'] as num).toInt()
-          : int.tryParse(json['stock']?.toString() ?? '0') ?? 0,
-      imageUrl: json['image_url'] as String?,
+      id: json['id'] is int ? json['id'] as int : int.parse(json['id'].toString()),
       createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString())
-          : null,
+          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      name: json['name'] as String? ?? '',
+      description: json['description'] as String?,
+      stock: json['stock'] is int ? json['stock'] as int : int.tryParse(json['stock']?.toString() ?? '0') ?? 0,
+      imageUrl: json['image_url'] as String?,
+      categoryId: json['category_id'] is int
+          ? json['category_id'] as int
+          : int.tryParse(json['category_id']?.toString() ?? '1') ?? 1,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      categoryName: catName,
     );
   }
 
-  Map<String, dynamic> toJson({bool includeId = false}) {
-    final map = <String, dynamic>{
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'created_at': createdAt.toIso8601String(),
       'name': name,
-      'description': description,
-      'price': price,
+      if (description != null) 'description': description,
       'stock': stock,
-      'image_url': imageUrl,
+      if (imageUrl != null) 'image_url': imageUrl,
+      'category_id': categoryId,
+      'price': price,
     };
-    if (includeId && id != null) {
-      map['id'] = id;
-    }
-    return map;
   }
 
   Product copyWith({
-    dynamic id,
+    int? id,
+    DateTime? createdAt,
     String? name,
     String? description,
-    double? price,
     int? stock,
     String? imageUrl,
-    DateTime? createdAt,
+    int? categoryId,
+    double? price,
+    String? categoryName,
   }) {
     return Product(
       id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
       name: name ?? this.name,
       description: description ?? this.description,
-      price: price ?? this.price,
       stock: stock ?? this.stock,
       imageUrl: imageUrl ?? this.imageUrl,
-      createdAt: createdAt ?? this.createdAt,
+      categoryId: categoryId ?? this.categoryId,
+      price: price ?? this.price,
+      categoryName: categoryName ?? this.categoryName,
     );
   }
 }
-

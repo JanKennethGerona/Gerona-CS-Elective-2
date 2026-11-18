@@ -1,41 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/product_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/product_providers.dart';
 import '../utils/lego_theme.dart';
 
-class PriceFilterSlider extends StatefulWidget {
+class PriceFilterSlider extends ConsumerStatefulWidget {
   const PriceFilterSlider({super.key});
 
   @override
-  State<PriceFilterSlider> createState() => _PriceFilterSliderState();
+  ConsumerState<PriceFilterSlider> createState() => _PriceFilterSliderState();
 }
 
-class _PriceFilterSliderState extends State<PriceFilterSlider> {
+class _PriceFilterSliderState extends ConsumerState<PriceFilterSlider> {
   late RangeValues _currentValues;
 
   @override
   void initState() {
     super.initState();
-    _currentValues = context.read<ProductProvider>().priceRange;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final providerRange = context.watch<ProductProvider>().priceRange;
-    _currentValues = providerRange;
+    _currentValues = ref.read(productFilterProvider).priceRange;
   }
 
   void _applyQuickPreset(double min, double max) {
     setState(() {
       _currentValues = RangeValues(min, max);
     });
-    context.read<ProductProvider>().setPriceRange(RangeValues(min, max));
+    ref.read(productFilterProvider.notifier).setPriceRange(RangeValues(min, max));
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ProductProvider>();
+    final filter = ref.watch(productFilterProvider);
+    _currentValues = filter.priceRange;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -108,11 +102,10 @@ class _PriceFilterSliderState extends State<PriceFilterSlider> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // The Price Range Slider (LEGO Red active track)
                 RangeSlider(
                   values: _currentValues,
-                  min: ProductProvider.minAllowedPrice,
-                  max: ProductProvider.maxAllowedPrice,
+                  min: ProductFilterState.minPrice,
+                  max: ProductFilterState.maxPrice,
                   divisions: 40,
                   activeColor: LegoTheme.red,
                   inactiveColor: Colors.grey.shade300,
@@ -126,7 +119,9 @@ class _PriceFilterSliderState extends State<PriceFilterSlider> {
                     });
                   },
                   onChangeEnd: (RangeValues finalValues) {
-                    provider.setPriceRange(finalValues);
+                    ref
+                        .read(productFilterProvider.notifier)
+                        .setPriceRange(finalValues);
                   },
                 ),
 
@@ -138,11 +133,11 @@ class _PriceFilterSliderState extends State<PriceFilterSlider> {
                       _LegoFilterChip(
                         label: 'All',
                         color: LegoTheme.blue,
-                        isSelected: _currentValues.start == ProductProvider.minAllowedPrice &&
-                            _currentValues.end == ProductProvider.maxAllowedPrice,
+                        isSelected: _currentValues.start == ProductFilterState.minPrice &&
+                            _currentValues.end == ProductFilterState.maxPrice,
                         onTap: () => _applyQuickPreset(
-                          ProductProvider.minAllowedPrice,
-                          ProductProvider.maxAllowedPrice,
+                          ProductFilterState.minPrice,
+                          ProductFilterState.maxPrice,
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -172,16 +167,16 @@ class _PriceFilterSliderState extends State<PriceFilterSlider> {
                         label: '\$200+',
                         color: LegoTheme.blue,
                         isSelected: _currentValues.start == 200 &&
-                            _currentValues.end == ProductProvider.maxAllowedPrice,
+                            _currentValues.end == ProductFilterState.maxPrice,
                         onTap: () => _applyQuickPreset(
                           200,
-                          ProductProvider.maxAllowedPrice,
+                          ProductFilterState.maxPrice,
                         ),
                       ),
-                      if (provider.isFiltered) ...[
+                      if (filter.isFiltered) ...[
                         const SizedBox(width: 6),
                         InkWell(
-                          onTap: () => provider.resetFilters(),
+                          onTap: () => ref.read(productFilterProvider.notifier).resetFilters(),
                           borderRadius: BorderRadius.circular(6),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

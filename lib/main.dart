@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
-import 'providers/auth_provider.dart';
-import 'providers/product_provider.dart';
-import 'screens/auth_gate.dart';
+import 'pages/auth/auth_gate.dart';
 import 'utils/lego_theme.dart';
 
 Future<void> main() async {
@@ -23,37 +21,35 @@ Future<void> main() async {
     }
   }
 
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: BrickedShopApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BrickedShopApp extends StatelessWidget {
+  const BrickedShopApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
-      ],
-      child: MaterialApp(
-        title: 'BRICKED Shop',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: LegoTheme.red,
-            primary: LegoTheme.red,
-            secondary: LegoTheme.yellow,
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-          scaffoldBackgroundColor: LegoTheme.plateBg,
-          cardTheme: const CardThemeData(
-            color: Colors.white,
-          ),
+    return MaterialApp(
+      title: 'BRICKED Shop',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: LegoTheme.red,
+          primary: LegoTheme.red,
+          secondary: LegoTheme.yellow,
+          brightness: Brightness.light,
         ),
-        home: const AuthGate(),
+        useMaterial3: true,
+        scaffoldBackgroundColor: LegoTheme.plateBg,
+        cardTheme: const CardThemeData(
+          color: Colors.white,
+        ),
       ),
+      home: const AuthGate(),
     );
   }
 }

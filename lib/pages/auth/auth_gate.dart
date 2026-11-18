@@ -1,51 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../providers/auth_provider.dart';
-import 'auth_screen.dart';
-import 'shop_screen.dart';
+import '../admin/admin_shell.dart';
+import 'login_page.dart';
+import '../customer/customer_shell.dart';
+import '../../providers/auth_providers.dart';
+import '../../utils/lego_theme.dart';
 
-class AuthGate extends StatefulWidget {
+class AuthGate extends ConsumerStatefulWidget {
   const AuthGate({super.key});
 
   @override
-  State<AuthGate> createState() => _AuthGateState();
+  ConsumerState<AuthGate> createState() => _AuthGateState();
 }
 
-class _AuthGateState extends State<AuthGate> {
+class _AuthGateState extends ConsumerState<AuthGate> {
   String? _lastNotifiedUserId;
   bool _showingDialog = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-
-    if (authProvider.isAuthenticated && authProvider.currentUser != null) {
-      final user = authProvider.currentUser!;
-      
-      // Check if this session change needs a first-time or returning-user alert
-      if (_lastNotifiedUserId != user.id && !_showingDialog) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _handleAuthDialogs(context, user);
-        });
-      }
-
-      return const ShopScreen();
-    }
-
-    // Reset when signed out
-    _lastNotifiedUserId = null;
-    return const AuthScreen();
-  }
 
   void _handleAuthDialogs(BuildContext context, User user) {
     if (!mounted) return;
     _lastNotifiedUserId = user.id;
 
-    // Determine if user is brand new or returning
-    // Supabase sets createdAt and lastSignInAt. If they differ by more than a few seconds, user is returning.
     final createdAt = DateTime.tryParse(user.createdAt);
-    final lastSignInAt = user.lastSignInAt != null ? DateTime.tryParse(user.lastSignInAt!) : null;
+    final lastSignInAt = user.lastSignInAt != null
+        ? DateTime.tryParse(user.lastSignInAt!)
+        : null;
 
     final isFirstTime = createdAt != null &&
         (lastSignInAt == null ||
@@ -57,18 +37,17 @@ class _AuthGateState extends State<AuthGate> {
     setState(() => _showingDialog = true);
 
     if (isFirstTime) {
-      // First-time sign in welcome dialog
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Color(0xFF00852B), width: 3), // LEGO Green
+            side: const BorderSide(color: LegoTheme.green, width: 3),
           ),
           title: const Row(
             children: [
-              Icon(Icons.celebration, color: Color(0xFF00852B), size: 28),
+              Icon(Icons.celebration, color: LegoTheme.green, size: 28),
               SizedBox(width: 10),
               Text(
                 'Welcome New Builder!',
@@ -80,15 +59,12 @@ class _AuthGateState extends State<AuthGate> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'You are signing in for the first time using $provider ($email).',
-                style: const TextStyle(fontSize: 14),
-              ),
+              Text('You are signing in for the first time using $provider ($email).'),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00852B).withValues(alpha: 0.1),
+                  color: LegoTheme.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
@@ -101,8 +77,10 @@ class _AuthGateState extends State<AuthGate> {
           actions: [
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF00852B),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                backgroundColor: LegoTheme.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () {
                 Navigator.pop(ctx);
@@ -114,18 +92,17 @@ class _AuthGateState extends State<AuthGate> {
         ),
       );
     } else {
-      // Returning user confirmation dialog
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(color: Color(0xFF0055BF), width: 3), // LEGO Blue
+            side: const BorderSide(color: LegoTheme.blue, width: 3),
           ),
           title: const Row(
             children: [
-              Icon(Icons.history, color: Color(0xFF0055BF), size: 28),
+              Icon(Icons.history, color: LegoTheme.blue, size: 28),
               SizedBox(width: 10),
               Text(
                 'Existing Account Found',
@@ -137,15 +114,12 @@ class _AuthGateState extends State<AuthGate> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'You have previously signed in using $provider ($email).',
-                style: const TextStyle(fontSize: 14),
-              ),
+              Text('You have previously signed in using $provider ($email).'),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0055BF).withValues(alpha: 0.1),
+                  color: LegoTheme.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text(
@@ -160,7 +134,7 @@ class _AuthGateState extends State<AuthGate> {
               onPressed: () {
                 Navigator.pop(ctx);
                 setState(() => _showingDialog = false);
-                context.read<AuthProvider>().signOut();
+                ref.read(supabaseServiceProvider).signOut();
               },
               child: const Text(
                 'Switch Account',
@@ -169,8 +143,10 @@ class _AuthGateState extends State<AuthGate> {
             ),
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF0055BF),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                backgroundColor: LegoTheme.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () {
                 Navigator.pop(ctx);
@@ -182,5 +158,74 @@ class _AuthGateState extends State<AuthGate> {
         ),
       );
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentUser = ref.watch(currentUserProvider);
+
+    if (currentUser == null) {
+      _lastNotifiedUserId = null;
+      return const LoginPage();
+    }
+
+    // Google / First-time prompt trigger
+    if (_lastNotifiedUserId != currentUser.id && !_showingDialog) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleAuthDialogs(context, currentUser);
+      });
+    }
+
+    // Load role to route to either AdminShell or CustomerShell
+    final profileAsync = ref.watch(userProfileProvider);
+
+    return profileAsync.when(
+      data: (profile) {
+        if (profile?.isAdmin == true) {
+          return const AdminShell();
+        }
+        return const CustomerShell();
+      },
+      loading: () => const Scaffold(
+        backgroundColor: LegoTheme.plateBg,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 36,
+                height: 36,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: LegoTheme.red,
+                ),
+              ),
+              SizedBox(height: 14),
+              Text(
+                'Verifying Builder Credentials...',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+      ),
+      error: (e, _) => Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: LegoTheme.red),
+              const SizedBox(height: 12),
+              Text('Profile error: $e'),
+              const SizedBox(height: 12),
+              FilledButton(
+                onPressed: () => ref.read(supabaseServiceProvider).signOut(),
+                child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

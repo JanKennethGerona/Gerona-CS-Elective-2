@@ -1,73 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
-import '../providers/product_provider.dart';
+import '../providers/auth_providers.dart';
+import '../providers/cart_provider.dart';
 import '../utils/lego_theme.dart';
-import 'product_form_dialog.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
   final Product product;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const ProductCard({
     super.key,
     required this.product,
+    this.onEdit,
+    this.onDelete,
   });
 
-  void _showEditDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => ProductFormDialog(productToEdit: product),
-    );
-  }
-
-  void _confirmDelete(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: LegoTheme.red, width: 3),
-        ),
-        title: const Row(
-          children: [
-            Icon(Icons.delete_outline, color: LegoTheme.red),
-            SizedBox(width: 8),
-            Text('Disassemble Brick?', style: TextStyle(fontWeight: FontWeight.w900)),
-          ],
-        ),
-        content: Text('Are you sure you want to remove "${product.name}" from your catalog?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: LegoTheme.red,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final scaffoldMessenger = ScaffoldMessenger.of(context);
-              final success = await context.read<ProductProvider>().deleteProduct(product.id);
-              if (success) {
-                scaffoldMessenger.showSnackBar(
-                  SnackBar(
-                    content: Text('Removed "${product.name}"'),
-                    backgroundColor: LegoTheme.green,
-                  ),
-                );
-              }
-            },
-            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Resolves image URL with a CORS proxy on Flutter Web to bypass browser CanvasKit CORS blocking
   String _resolveImageUrl(String url) {
     if (kIsWeb && (url.startsWith('http://') || url.startsWith('https://'))) {
       if (!url.contains('images.weserv.nl')) {
@@ -78,7 +28,9 @@ class ProductCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAdmin = ref.watch(isAdminProvider);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -213,98 +165,141 @@ class ProductCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w900,
                     fontSize: 13,
+                    fontWeight: FontWeight.w900,
                     color: LegoTheme.black,
                   ),
                 ),
                 const SizedBox(height: 2),
 
-                // Description
+                // Category & Description
                 Text(
-                  product.description.isEmpty
-                      ? 'Custom LEGO brick item'
-                      : product.description,
+                  product.categoryName != null && product.categoryName!.isNotEmpty
+                      ? '[${product.categoryName}] ${product.description ?? ''}'
+                      : (product.description ?? ''),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 10,
                     color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 6),
 
-                // Stock Badge & Actions Row
-                Row(
-                  children: [
-                    // Stock badge
-                    Expanded(
-                      child: Container(
+                // Controls row: Admin shows Edit/Delete; Customer shows Add to Cart
+                if (isAdmin)
+                  Row(
+                    children: [
+                      // Stock pill
+                      Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: product.stock > 0
-                              ? LegoTheme.green.withValues(alpha: 0.12)
-                              : LegoTheme.red.withValues(alpha: 0.12),
+                              ? const Color(0xFFE8F5E9)
+                              : const Color(0xFFFFEBEE),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: product.stock > 0 ? LegoTheme.green : LegoTheme.red,
+                            color: product.stock > 0
+                                ? LegoTheme.green
+                                : LegoTheme.red,
                             width: 1,
                           ),
                         ),
                         child: Text(
-                          product.stock > 0
-                              ? '${product.stock} bricks'
-                              : 'Out of stock',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          product.stock > 0 ? '${product.stock} bricks' : 'Out of stock',
                           style: TextStyle(
                             fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: product.stock > 0 ? LegoTheme.green : LegoTheme.red,
+                            fontWeight: FontWeight.bold,
+                            color: product.stock > 0
+                                ? LegoTheme.green
+                                : LegoTheme.red,
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-
-                    // Edit Button
-                    InkWell(
-                      onTap: () => _showEditDialog(context),
-                      borderRadius: BorderRadius.circular(4),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: LegoTheme.blue.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Icon(
-                          Icons.edit_outlined,
-                          size: 15,
-                          color: LegoTheme.blue,
+                      const Spacer(),
+                      // Edit button
+                      InkWell(
+                        onTap: onEdit,
+                        borderRadius: BorderRadius.circular(4),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.edit, size: 16, color: LegoTheme.blue),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 3),
-
-                    // Delete Button
-                    InkWell(
-                      onTap: () => _confirmDelete(context),
-                      borderRadius: BorderRadius.circular(4),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: LegoTheme.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Icon(
-                          Icons.delete_outline,
-                          size: 15,
-                          color: LegoTheme.red,
+                      const SizedBox(width: 4),
+                      // Delete button
+                      InkWell(
+                        onTap: onDelete,
+                        borderRadius: BorderRadius.circular(4),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.delete, size: 16, color: LegoTheme.red),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  )
+                else
+                  // Customer: Stock + Add to Cart Button
+                  Row(
+                    children: [
+                      // Stock status
+                      Text(
+                        product.stock > 0 ? '${product.stock} left' : 'Out of stock',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: product.stock > 0 ? LegoTheme.green : LegoTheme.red,
+                        ),
+                      ),
+                      const Spacer(),
+                      // Add to Cart Button
+                      SizedBox(
+                        height: 28,
+                        child: FilledButton.icon(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: product.stock > 0
+                                ? LegoTheme.blue
+                                : Colors.grey.shade400,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                          onPressed: product.stock > 0
+                              ? () {
+                                  final ok = ref
+                                      .read(cartProvider.notifier)
+                                      .addToCart(product);
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                  if (ok) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Added "${product.name}" to cart!'),
+                                        duration: const Duration(seconds: 1),
+                                        backgroundColor: LegoTheme.green,
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Cannot add more: stock limit reached!'),
+                                        duration: Duration(seconds: 2),
+                                        backgroundColor: LegoTheme.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              : null,
+                          icon: const Icon(Icons.add_shopping_cart, size: 14),
+                          label: const Text(
+                            'Add',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
